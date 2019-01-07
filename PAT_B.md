@@ -40,3 +40,27 @@ int main() {
 	return 0;
 }
 ```
+## 1009 说反话
+VS2017的<Ctrl+Z>结合<Enter>么得用，但OJ上确实过了。据说gcc或者DEV上都能正常使用。罢了，凑活凑活之后转C++打码。
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+using namespace std;
+
+int main() {	
+	int num = 0;  // 单词的个数
+	char words[81][50];
+	// 使用scanf因为它以空格为终止，而gets则以换行为终止
+	while (scanf("%s", words[num]) != EOF) {  
+		num++;
+	}
+	for (int i = num - 1; i >= 0; i--) {
+		printf("%s", words[i]);
+		if (i > 0)
+			printf(" ");
+	}
+	system("pause");
+	return 0;
+}
+```
