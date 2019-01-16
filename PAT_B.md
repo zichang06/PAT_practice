@@ -437,4 +437,73 @@ int main() {
 
 
 
-## 1024/A1073 科学计数法 (实战P69)
+## 1024/A1073 ☆ ??? 科学计数法 (实战P69)
+
+1. cstring和string的使用
+2. 注意分情况讨论，具体见注释
+3. 最后一个用例总是运行时出错。原先我设置的结果数组是10000，改了22000后就AC了。网上有人如下说，但我没懂。???
+> 这里数字存储长度不超过9999个字节，9999个字节可以存储多大的数？
+1个字节可以存储2^8-1 = 127
+9999个字节可以存储2^(8*9999)-1 数字用十进制表示长度为21070位，所以数组的大小不够存储。修改后测试通过。
+
+```C++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <cstring>
+#include <string>
+using namespace std;
+
+int main() {
+	string a;
+	cin >> a;
+	char res[22000] = { '\0' };
+	int pos_dot = (int)a.find('.');
+	int pos_E = (int)a.find('E');
+	char sign = a[0];
+	char part1 = a[pos_dot - 1];
+	// string part1 = a.substr(1, pos_dot - 1);  // 一般就是'1'，错了
+	string part2 = a.substr(pos_dot + 1, pos_E - pos_dot - 1);
+	char expSign = a[pos_E + 1];
+	string exp = a.substr(pos_E + 2, a.size() - pos_E);
+	int expNum = atoi(exp.c_str());  // ☆ 需先将string转成char*，再转成int
+	int start = 0;
+
+	if (sign == '-') {
+		res[0] = '-';
+		start++;
+	}
+	if (expSign == '-') {  // 指数为负数时
+		res[start++] = '0';
+		res[start++] = '.';
+		for (int i = 0; i < expNum - 1; i++) {
+			res[start++] = '0';
+		}
+		res[start++] = part1;
+		strcat(res, part2.c_str());
+	}
+	else {  // 指数为正数时, 可能有小数点，若指数太大，则可能没有小数点
+		res[start++] = part1;
+		if (expNum < part2.size()) {
+			string part2_1(part2.substr(0, expNum));
+			string part2_2 = part2.substr(expNum, part2.size() - expNum);
+			strcat(res, part2_1.c_str());
+			start += part2_1.size();
+			res[start++] = '.';
+			strcat(res, part2_2.c_str());
+		}
+		else {
+			strcat(res, part2.c_str());
+			start += part2.length();
+			for (int i = 0; i < expNum - part2.length(); i++) {
+				res[start++] = '0';
+			}
+		}
+	}
+
+	printf("%s", res);
+	system("pause");
+	return 0;
+}
+```
+
