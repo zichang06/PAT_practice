@@ -1,4 +1,9 @@
 # PAT (Basic Level) Practice （中文）
+
+## 略的题目
+
+06, 21, 31, 02
+
 ## 1022 D进制的A+B 
 ```c++
 #define _CRT_SECURE_NO_WARNINGS
@@ -223,5 +228,213 @@ int main() {
 	return 0;
 }
 ```
-## 1018 锤子剪刀布
-略
+## 1028 ☆ 人口普查 
+此题有两点值得注意：
+1. scanf读取的格式。
+2. younger函数，比较日期大小
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <limits.h>  // INT_MIN
+#include <vector>
+#include <string>
+using namespace std;
+
+
+struct person {
+	char name[6];
+	int year;
+	int month;
+	int day;
+}youngest, oldest, low, high, tmp;  // 设置全局变量
+
+void init() {  // main函数开始调用初始化函数，以初始化全局变量
+	youngest.year = low.year = 1814;  // high 年龄最大的
+	oldest.year = high.year = 2014;  // low 年龄最小的
+	youngest.month = high.month = oldest.month = low.month = 9;
+	youngest.day = high.day = oldest.day = low.day = 6;
+}
+
+bool younger(person& a, person& b) {
+	/* if a is younger than b, return true */
+	if (a.year != b.year)
+		return a.year >= b.year;
+	else if (a.month != b.month)
+		return a.month >= b.month;
+	else if (a.day != b.day)
+		return a.day >= b.day;
+}
+bool isValid(person& a) {
+	return younger(high, a) && younger(a, low);
+}
+int main() {
+	init();
+	int k, count = 0;
+	cin >> k;
+	while (k--) {
+		scanf("%s %d/%d/%d", tmp.name, &tmp.year, &tmp.month, &tmp.day);
+		if (isValid(tmp)) {
+			count++;
+			if (younger(oldest, tmp))
+				oldest = tmp;
+			if (younger(tmp, youngest))
+				youngest = tmp;
+		}
+	}
+	if (count == 0)
+		cout << "0";
+	else
+		printf("%d %s %s\n", count, oldest.name, youngest.name);
+	system("pause");
+	return 0;
+}
+```
+
+## 1027 ☆ 打印沙漏 
+
+两个注意点：
+
+1. 根据公式算得x，可能是偶数，此时x必须减1。
+2. 每行后面的空格无需打印，否则会提示格式错误。
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <math.h>
+#include <vector>
+#include <string>
+using namespace std;
+
+
+int main() {
+	int n, x, sum;
+	char ch;
+	cin >> n >> ch;
+	x = (int)sqrt((double)(2 * (1 + n))) - 1;
+	if (x % 2 == 0)
+		x -= 1;
+	sum = (1 + x) * (1 + x) / 2 - 1;
+
+	int line = x;
+	while (line != 1)
+	{
+		for (int i = 0; i < (x - line) / 2; i++) {
+			cout << " ";
+		}
+		for (int i = 0; i < line; i++) {
+			cout << ch;
+		}
+		/*for (int i = 0; i < (x - line) / 2; i++) {  后面的空格不需要啦！！
+			cout << " ";
+		}*/
+		cout << endl;
+		line -= 2;
+	}
+	while (line <= x)
+	{
+		for (int i = 0; i < (x - line) / 2; i++) {
+			cout << " ";
+		}
+		for (int i = 0; i < line; i++) {
+			cout << ch;
+		}
+		/*for (int i = 0; i < (x - line) / 2; i++) {
+			cout << " ";
+		}*/
+		cout << endl;
+		line += 2;
+	}
+	cout << n - sum;
+	system("pause");
+	return 0;
+}
+```
+
+# 1037 在霍格沃茨找零钱
+
+重点在于都转成同一量，相减后再规格化。
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <math.h>
+#include <vector>
+#include <string>
+using namespace std;
+
+
+int main() {
+	int g1, s1, k1, g2, s2, k2, price, money;
+	scanf("%d.%d.%d %d.%d.%d", &g1, &s1, &k1, &g2, &s2, &k2);
+	price = g1 * 17 * 29 + s1 * 29 + k1;
+	money = g2 * 17 * 29 + s2 * 29 + k2;
+	int change = money - price;
+	if (change < 0) {
+		cout << "-";
+		change = -change;
+	}
+	printf("%d.%d.%d", change / 17 / 29, change % (17 * 29) / 29, change % 29);
+	system("pause");
+	return 0;
+}
+```
+
+## 1014/A1061 福尔摩斯的约会
+
+注意比较字符时的范围，如A-G，A-N，而不是A-Z，不然会答案错误。
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <math.h>
+#include <vector>
+#include <string>
+using namespace std;
+
+int main() {
+	string week[7] = { "MON","TUE","WED","THU","FRI","SAT","SUN" };
+	string a1, a2, b1, b2;
+	cin >> a1 >> a2 >> b1 >> b2;
+	int i;
+	for (i = 0; i < a1.size() && i < a2.size(); i++) {
+		if (a1[i] == a2[i] && a1[i] <= 'G' && a1[i] >= 'A') {
+			cout << week[a1[i] - 'A'] << " ";
+			break;
+		}
+	}
+
+	int h = 0;;
+	for (i++; i < a1.size() && i < a2.size(); i++) {
+		if (a1[i] == a2[i]) {
+			if (a1[i] <= '9' && a1[i] >= '0')
+				printf("%02d:", a1[i] - '0');
+			else if (a1[i] <= 'N' && a1[i] >= 'A')
+				printf("%02d:", a1[i] - 'A' + 10);
+			else
+				continue;
+			break;
+		}
+	}
+	
+
+	for (i = 0; i < b1.size() && i < b2.size(); i++) {
+		if (b1[i] == b2[i] && ((b1[i] <= 'Z' && b1[i] >= 'A')
+			|| (b1[i] <= 'z' && b1[i] >= 'a'))) {
+			printf("%02d", i);
+			break;
+		}
+	}
+
+	system("pause");
+	return 0;
+}
+```
+
+
+
+## 1024/A1073 科学计数法 (实战P69)
