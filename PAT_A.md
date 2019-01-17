@@ -2,7 +2,11 @@
 
 ## 略的题
 
-06，36
+06，36, 05,35
+
+# 有疑问的题
+
+以???标出，自上而下搜索即可得疑问队列。
 
 ## ☆ 1046 Shortest Distance 
 此题容易卡超时，必须在输入时就预处理好 1 到各点的距离。
@@ -419,4 +423,102 @@ int main() {
 	return 0;
 }
 ```
+
+## 1001 A+B Format
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <cstring>
+#include <string>
+using namespace std;
+
+int main() {
+	int a, b, sum;
+	cin >> a >> b;
+	sum = a + b;
+	if (sum < 0) {
+		sum = -sum;
+		cout << "-";
+	}
+	int num[7] = {-1};
+	int digits = 0;
+	if (sum == 0)  // 注意要考虑结果为0的情况
+		num[digits++] = 0;
+	while (sum != 0) {
+		num[digits++] = sum % 10;
+		sum /= 10;
+	}
+	for (int i = digits - 1; i >= 0; i--) {
+		cout << num[i];
+		if (i > 0 && i % 3 == 0)  // 每三位一个逗号，最后一位除外!
+			cout << ",";
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1077 ☆ Kuchiguse 公共后缀  实战P80
+
+1. getline(cin, str)
+2. 求公共后缀 → 公共前缀。土方法，杠杠滴。
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <cstring>
+#include <string>
+#include <limits.h>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int main() {
+	int n;
+	string tmp;
+	vector<string> strs;
+
+	cin >> n;  // cin 没有吸收换行符，需要getchar一下
+	getchar();
+	while (n--) {
+		getline(cin,tmp);  // !!! c++的读取完整的包括空格的一行。
+		strs.push_back(tmp);
+	}
+	int minLength = INT_MAX;
+	for (int i = 0; i < strs.size(); i++) {
+		minLength = minLength <= strs[i].length() ? minLength : strs[i].length();
+		reverse(strs[i].begin(), strs[i].end());
+	}
+
+	int i, res;
+	for (i = 0; i < minLength;) {
+		bool flag = false;
+		char ch = strs[0][i];
+		for (int j = 1; j < strs.size(); j++) {
+			if (strs[j][i] != ch)
+				flag = true;
+		}
+		if (flag)
+			break;
+		i++;  // 放在这里，只有第i位合上了，才自加
+	}
+	int length = i;
+
+	if (length <= 0) {
+		cout << "nai";
+	}
+	else {
+		string resStr = strs[0].substr(0, length);
+		reverse(resStr.begin(), resStr.end());
+		cout << resStr;
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## ☆ 1082 Read Number in Chinese 实战P84 ???
 
