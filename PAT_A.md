@@ -2,7 +2,7 @@
 
 ## 略的题
 
-06，36, 05,35
+06，36, 05,35，62，28
 
 # 有疑问的题
 
@@ -573,6 +573,168 @@ int main() {
 		}
 		right += 4;
 	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1025 PAT Ranking
+
+主要思想：
+
+先组内排序，存储好顺序后，再总体排序（反过来亦可）。两种排名方式逐个击破。
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <string>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+struct student{
+	string id;
+	int score;
+	int location_num;
+	int final_rank;
+	int local_rank;
+};
+
+bool cmp(student a, student b) {  // 排序比较函数
+	if (a.score != b.score) return a.score > b.score;  // 先按分数从高到低排序
+	else return a.id < b.id;  // 分数相同按准考证号从小到大排序。
+}
+
+int main() {
+	int location_sum[101] = {0};  // 每个考场的对应人数
+	int location_num;
+	vector<student> students;
+
+	cin >> location_num;
+	for (int i = 1; i <= location_num; i++) {
+		cin >> location_sum[i];
+		for (int j = 1; j <= location_sum[i]; j++) {
+			student stu;
+			stu.location_num = i;
+			cin >> stu.id >> stu.score;
+			students.push_back(stu);
+		}
+	}
+
+	int sum = 0;
+	for (int i = 1; i <= location_num; i++) {  // 对每个考场内考生分别进行成绩排序
+		sort(students.begin() + sum, students.begin() + sum + location_sum[i], cmp);
+		int rank = 1;
+		for (int j = sum; j < sum + location_sum[i]; j++) {
+			students[j].local_rank = rank++;
+			if (j != location_sum[i - 1] && students[j].score == students[j - 1].score)
+				students[j].local_rank = students[j - 1].local_rank;
+		}
+		sum += location_sum[i];
+	}
+
+	sort(students.begin(), students.end(), cmp);  // 对整个考场内考生进行成绩排序
+	for (int i = 0; i < students.size(); i++) {
+		students[i].final_rank = i + 1;
+		if (i != 0 && students[i].score == students[i - 1].score)
+			students[i].final_rank = students[i - 1].final_rank;
+	}
+
+	cout << students.size() << endl;
+	for (int i = 0; i < students.size(); i++) {
+		cout << students[i].id;
+		printf(" %d %d %d\n", students[i].final_rank, students[i].location_num, students[i].local_rank);
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1012 ☆ the best rank
+
+利用全局变量row，对比较函数cmp进行“传参”，以实现对不同分数的比较，妙~~
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <limits.h>
+#include <string>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+struct student{
+	string id;
+	int grade[4];  // 四个分数——average，computer，math，English
+	int rank[4];  // 对应四门课的排名 ACME
+};
+
+int now;  // 当前比较科目 
+
+bool cmp(student a, student b) {  // 排序比较函数
+	return a.grade[now] > b.grade[now];
+}
+
+char subjects[4] = { 'A','C','M','E' };
+
+pair<int, char> minRank(student& a) {  // 找出该学生最靠前的排名和学科
+	int subject, minRank = INT_MAX, minSubject = -1;
+	for (subject = 0; subject < 4; subject++) {
+		if (a.rank[subject] < minRank) {
+			minSubject = subject;
+			minRank = a.rank[subject];
+		}
+	}
+	return make_pair(minRank, subjects[minSubject]);
+}
+
+int main() {
+	int n, m;
+	vector<student> students;
+	student tmp;
+	cin >> n >> m;
+
+	/* input */
+	for (int i = 0; i < n; i++) {
+		cin >> tmp.id >> tmp.grade[1] >> tmp.grade[2] >> tmp.grade[3];
+		tmp.grade[0] = tmp.grade[1] + tmp.grade[2] + tmp.grade[3];
+		students.push_back(tmp);
+	}
+	/* processing —— sort */
+	for (now = 0; now < 4; now++) {
+		sort(students.begin(), students.end(), cmp);
+		students[0].rank[now] = 1;
+		for (int i = 1; i < students.size(); i++) {
+			if (students[i].grade[now] == students[i - 1].grade[now])
+				students[i].rank[now] = students[i - 1].rank[now];
+			else
+				students[i].rank[now] = i + 1;
+		}
+	}
+
+	/* output */
+	string id;
+	int pos;
+	for (int i = 0; i < m; i++) {
+		cin >> id;
+		pos = -1;
+		for (int j = 0; j < students.size(); j++) {
+			if (students[j].id == id) {
+				pos = j;
+				break;
+			}
+		}
+		if (pos == -1) {
+			cout << "N/A" << endl;
+		}
+		else {
+			pair<int, char> res = minRank(students[pos]);
+			cout << res.first << " " << res.second << endl;
+		}
+	}
+	
 	system("pause");
 	return 0;
 }
