@@ -2,7 +2,7 @@
 
 ## 略的题
 
-06，36, 05,35，62，28
+06，36, 05,35，62，28，16，55，75，83，80
 
 # 有疑问的题
 
@@ -735,6 +735,122 @@ int main() {
 		}
 	}
 	
+	system("pause");
+	return 0;
+}
+```
+
+## 1095 ☆ Cars on Campus  ???
+
+???
+
+原来样例4超时，后来变成了答案错误，尚未解决。
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <limits.h>
+#include <string>
+#include <vector>
+#include <map>
+#include <algorithm>
+using namespace std;
+
+
+struct car {
+	string id;  // 车牌号
+	int time;  // 记录的时刻（以s为单位）
+	string status;   // in 或 out
+};
+
+struct record {
+	string id;  // 车牌号
+	int inTime;  // 进入时间
+	int outTime;  // 驶出时间
+};
+
+vector<car> allRecords;
+vector<record> valid; // 所有有效记录, 用于最后统计特定时间内的校内车辆数
+map<string, int> parkTime;  // 车牌号 → 总停留时间, 用以最后统计停车时间最长的车
+
+// 先按车牌号字典序从小到大排序，若车牌号相同，则按时间从小到大排序
+bool cmpByIdAndTime(car a, car b) {
+	if (a.id != b.id)
+		return a.id < b.id;
+	else
+		return a.time < b.time;
+}
+// 将有效记录按进入时间从小到大排序
+bool cmpByInTime(record a, record b) {
+	return a.inTime < b.inTime;
+}
+
+int timeToInt(int hh, int mm, int ss) {
+	return hh * 3600 + mm * 60 + ss;
+}
+
+int main() {
+	int n, k, hh, mm, ss;
+	scanf("%d %d", &n, &k);
+	car tmp;
+	record recordTmp;
+	for (int i = 0; i < n; i++) {
+		cin >> tmp.id;  //  cin >> string 是可以的
+		scanf("%d:%d:%d", &hh, &mm, &ss);
+		tmp.time = timeToInt(hh, mm, ss);
+		cin >> tmp.status;  // 转换为以s为计时单位
+		allRecords.push_back(tmp);
+	}
+	sort(allRecords.begin(), allRecords.end(), cmpByIdAndTime);  // 按车牌号和时间排序
+
+	int maxTime = -1;  // 最长停留时间
+	for (int i = 0; i < n - 1; i++) {  // 遍历所有记录
+		if (allRecords[i].id == allRecords[i].id
+			&& allRecords[i].status == "in"   // 第i条是in记录
+			&& allRecords[i + 1].status == "out") {  // 第i+1条是out记录
+
+			recordTmp.id = allRecords[i].id;
+			recordTmp.inTime = allRecords[i].time;
+			recordTmp.outTime = allRecords[i + 1].time;
+			valid.push_back(recordTmp);  // 这是一条有效的记录
+
+			int inTime = allRecords[i + 1].time - allRecords[i].time;
+			if (parkTime.count(allRecords[i].id) == 0) {  // map中还没这个车牌号，置零
+				parkTime[allRecords[i].id] = 0;
+			}
+			parkTime[allRecords[i].id] += inTime;   // 增加这个车牌号的总停留时间
+			maxTime = max(maxTime, parkTime[allRecords[i].id]);  // 更新最大总停留时间
+		}
+	}
+	sort(valid.begin(), valid.end(), cmpByInTime);
+
+	int now = 0;  // 所给输入的时间点是递增的，故可只对valid的遍历进行优化, 不然会超时。!!!
+	//now 表示上次时间点之后的记录所在下标
+	for (int i = 0; i < k; i++) {
+		scanf("%d:%d:%d", &hh, &mm, &ss);
+		int currentTime = timeToInt(hh, mm, ss);
+		int numCar = 0;
+		bool first = true;
+		//for (int j = now; valid[j].inTime <= currentTime && j < valid.size();) {
+		for (int j = now; j < valid.size() && valid[j].inTime <= currentTime; j++) {  // 此二者不能颠倒，不然会发生数组越界
+			if (valid[j].outTime > currentTime) { 
+				numCar++;
+				if (first) {
+					now = j;
+					first = false;
+				}
+			}
+		}
+		printf("%d\n", numCar);
+	}
+
+	map<string, int>::iterator it;
+	for (it = parkTime.begin(); it != parkTime.end(); it++) {
+		if (it->second == maxTime)  // 输出所有最长总停留时间的车牌号
+			printf("%s ", it->first.c_str());
+	}
+	printf("%02d:%02d:%02d\n", maxTime / 3600, maxTime % 3600 / 60, maxTime % 60);
 	system("pause");
 	return 0;
 }
