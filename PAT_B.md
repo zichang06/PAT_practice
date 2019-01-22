@@ -2,7 +2,9 @@
 
 ## 略的题目
 
-06, 21, 31, 02，48，15
+06、21、31、02、48、
+
+15、38
 
 ## 1022 D进制的A+B 
 ```c++
@@ -502,6 +504,81 @@ int main() {
 	}
 
 	printf("%s", res);
+	system("pause");
+	return 0;
+}
+```
+
+## 1029 旧键盘
+
+```C++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <limits.h>
+#include <string>
+#include <vector>
+using namespace std;
+
+bool characters[37] = { false };
+/* 0-25 corresponds to A-Z; 26 - 35 corresponds to 1-10; 36 means _ */
+
+/*
+ * 首先扫描完整字符串，所经历字符置为true
+ * 再扫描输入的字符串，扫的字符置为false
+ * 最后看仍然为true的字符，就是坏掉的键盘
+*/
+
+int hashFuc(char ch) {
+	if (ch <= 'z' && ch >= 'a')
+		return ch - 'a';
+	if (ch <= 'Z' && ch >= 'A')
+		return ch - 'A';
+	if (ch <= '9' && ch >= '0')
+		return ch - '0' + 26;
+	if (ch == '_')
+		return 36;
+	else
+		return -1;
+}
+
+char reverseHash(int tmp) {
+	if (tmp == 36)
+		return '_';
+	if (tmp >= 0 && tmp <= 25)
+		return tmp + 'A';
+	if (tmp >= 26 && tmp <= 35)
+		return tmp - 26 + '0';
+}
+
+int main() {
+	string str1, str2;
+	getline(cin, str1);
+	getline(cin, str2);
+	int i, pos;
+
+	for (i = 0; i < str1.size(); i++) {
+		pos = hashFuc(str1[i]);
+		characters[pos] = true;
+	}
+
+	for (i = 0; i < str2.size(); i++) {
+		pos = hashFuc(str2[i]);
+		characters[pos] = false;
+	}
+
+
+	char ch;
+	// 按照原本字符串中字符出现顺序
+	for (i = 0; i < str1.size(); i++) {
+		pos = hashFuc(str1[i]);
+		if (characters[pos]) {
+			ch = reverseHash(pos);
+			cout << ch;
+			characters[pos] = false;
+		}
+	}
+	
 	system("pause");
 	return 0;
 }
