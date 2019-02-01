@@ -4,7 +4,9 @@
 
 06、21、31、02、48、
 
-15、38
+15、38、33、43、47、
+
+
 
 ## 1022 D进制的A+B 
 ```c++
@@ -579,6 +581,564 @@ int main() {
 		}
 	}
 	
+	system("pause");
+	return 0;
+}
+```
+
+## 1039 到底买不买
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <string>
+#include <vector>
+using namespace std;
+
+int beadNum[62] = { 0 };
+
+int hashFuc(char ch) {
+	if (ch <= 'z' && ch >= 'a')
+		return ch - 'a';
+	if (ch <= 'Z' && ch >= 'A')
+		return ch - 'A' + 26;
+	if (ch <= '9' && ch >= '0')
+		return ch - '0' + 52;
+	else
+		return -1;
+}
+int main() {
+	string str1, str2;
+	getline(cin, str1);
+	getline(cin, str2);
+	int i, pos;
+
+	for (i = 0; i < str2.size(); i++) {
+		pos = hashFuc(str2[i]);
+		beadNum[pos]++;
+	}
+
+	for (i = 0; i < str1.size(); i++) {
+		pos = hashFuc(str1[i]);
+		beadNum[pos]--;
+	}
+
+	// 正数的珠子说明不够，累积之则为缺的珠子数量
+	// 负数不用参与计数
+	// 如果珠子够的话，两个字符串长度差值即为多余珠子数
+	int lack = 0;
+	for (i = 0; i < 62; i++) {
+		if (beadNum[i] > 0) {
+			lack += beadNum[i];
+		}
+		
+	}
+
+	if (lack > 0) {
+		printf("No %d", lack);
+	}
+	else {
+		printf("Yes %d", str1.size() - str2.size());
+	}
+	
+	system("pause");
+	return 0;
+}
+```
+
+## 1042 字符统计
+
+```c++
+提交成功
+×
+
+
+
+子长
+
+
+题目集
+
+题目列表
+
+提交列表
+
+排名
+PAT (Basic Level) Practice （中文）
+
+1900 分
+
+编程题
+共 95 小题，共计 1900 分
+原PAT网站用户可在 https://patest.cn/bind_old_pat_user 页面绑定至拼题A账号。绑定后，原PAT网站的提交将被合并至拼题A网站用户的对应题目集中。
+
+编程题
+1042 字符统计 （20 分）
+请编写程序，找出一段给定文字中出现最频繁的那个英文字母。
+输入格式：
+输入在一行中给出一个长度不超过 1000 的字符串。字符串由 ASCII 码表中任意可见字符及空格组成，至少包含 1 个英文字母，以回车结束（回车不算在内）。
+输出格式：
+在一行中输出出现频率最高的那个英文字母及其出现次数，其间以空格分隔。如果有并列，则输出按字母序最小的那个字母。统计时不区分大小写，输出小写字母。
+输入样例：
+This is a simple TEST.  There ARE numbers and other symbols 1&2&3...........
+输出样例：
+e 7
+作者: CHEN, Yue
+单位: 浙江大学
+时间限制: 400 ms
+内存限制: 64 MB
+代码长度限制: 16 KB
+
+编译器:共 31 种编译器可用
+
+
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+
+
+
+
+    return ch - 'a';
+  if (ch <= 'Z' && ch >= 'A')
+    return ch - 'A';
+  else
+    return -1;
+}
+int main() {
+  string str;
+  getline(cin, str);
+
+  int pos;
+  for (int i = 0; i < str.size(); i++) {
+    pos = hashFuc(str[i]);
+    if (pos != -1) {
+      characters[pos]++;
+    }
+  }
+  
+  int maxNum = 0, maxCh = 0;
+  for (int i = 0; i < 26; i++) {
+    if (characters[i] > maxNum) {
+      maxCh = i;
+      maxNum = characters[i];
+    }
+  }
+
+  printf("%c %d", maxCh + 'a', maxNum);
+  
+  system("pause");
+  return 0;
+}
+```
+
+## 1005 🔺☆ 继续（3n+1）猜想
+
+第二次做尝试想出思路思路!!!
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+bool cmp(int a, int b) {
+	return a > b;  // 从大到小排序
+}
+
+int main() {
+	int n, m, a[101];
+	cin >> n;
+	bool hashTable[10000] = { 0 };
+
+	for (int i = 0; i < n; i++) {
+		cin >> a[i];
+		m = a[i];
+		while (m != 1) {
+			if (m % 2 == 1)
+				m = (3 * m + 1) / 2;
+			else
+				m = m / 2;
+			hashTable[m] = true;
+		}
+	}
+
+	int count = 0;  // count 计数“关键字”个数
+	for (int i = 0; i < n; i++) {
+		if (hashTable[a[i]] == false)
+			count++;
+	}
+
+	sort(a, a + n, cmp);
+	for (int i = 0; i < n; i++) {
+		if (hashTable[a[i]] == false) {
+			cout << a[i];
+			count--;
+			if (count > 0)
+				cout << " ";
+		}
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1023 ☆ 组个最小数
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+int main() {
+	int count[10];  // 记录数字0-9的个数
+	for (int i = 0; i < 10; i++) {
+		cin >> count[i];
+	}
+	// 从1-9中选择count不为0的最小的数字
+	for (int i = 1; i < 10; i++) {
+		if (count[i] > 0) {
+			cout << i;
+			count[i]--;
+			break;
+		}
+	}
+	for (int i = 0; i < 10; i++) {
+		for (int j = 0; j < count[i]; j++) {
+			cout << i;
+		}
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1020 月饼
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+struct moonCake {
+	double store;  // 库存量
+	double sell;  // 总售价
+	double price;  // 单价
+}cakes[1001];
+
+bool cmp(moonCake a, moonCake b) {
+	return a.price > b.price;  // 从大到小排序
+}
+int main() {
+	int n;
+	double d, left, profit;
+	cin >> n;
+	cin >> d;
+	for (int i = 0; i < n; i++) {
+		cin >> cakes[i].store;
+	}
+	for (int i = 0; i < n; i++) {
+		cin >> cakes[i].sell;
+		cakes[i].price = cakes[i].sell / cakes[i].store;
+	}
+
+	sort(cakes, cakes + n, cmp);
+	left = d;
+	profit = 0;
+
+	for (int i = 0; i < n; i++) {
+		if (cakes[i].store <= left) {
+			left -= cakes[i].store;
+			profit += cakes[i].sell;
+		}
+		else {
+			profit += cakes[i].price * left;
+			left = 0;
+			break;
+		}
+	}
+	
+	printf("%.02f", profit);
+	system("pause");
+	return 0;
+}
+
+```
+
+## 1030 🔺???完美数列
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+int nums[100001];
+
+int main() {
+	int n, p;
+	cin >> n >> p;
+	for (int i = 0; i < n; i++) {
+		cin >> nums[i];
+	}
+	sort(nums, nums + n);  // 递增排序
+	int ans = 1;
+	for (int i = 0; i < n; i++) {
+		// 在nums[i+1] ~ nums[n-1]中查找第一个超过a[i] * p的数，返回其位置给j
+		int j = upper_bound(nums + i + 1, nums + n, (long long)nums[i] * p) - nums;
+		ans = max(ans, j - i);  // 更新最大长度
+	}
+	cout << ans;
+	system("pause");
+	return 0;
+}
+
+```
+
+## 1010
+
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+long long map[256];  // 0-9、a-z与0-35相对应
+
+void init() {
+​	for (char c = '0'; c <= '9'; c++)
+​		map[c] = c - '0'; 
+​	for (char c = 'a'; c <= 'z'; c++)
+​		map[c] = c - 'a' + 10;  // 将'a'-'z'映射到10-35
+}
+
+// 将a转换为十进制，t为上界
+long long convertNum10(char a[], long long radix, long long t) {
+​	long long ans = 0;
+​	int len = strlen(a);
+​	for (int i = 0; i < len; i++) {
+​		ans = ans * radix + map[a[i]];  // 进制转换
+​		if (ans < 0 || ans > t)
+​			return -1;
+​	}
+​	return ans;
+}
+
+// N2的十进制与t比较
+bool cmp(char N2[], long long radix, long long t) {
+​	int len = strlen(N2);
+​	long long num = convertNum10(N2, radix, t);
+​	if (num > 0)
+​		return true;
+​	if(t > )
+}
+
+int main() {
+​	
+​	system("pause");
+​	return 0;
+}
+
+## 1039 ☆ Course List for Students
+
+学生姓名的hash值得看下~~P233
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+long long map[256];  // 0-9、a-z与0-35相对应
+
+const int N = 40001;  // 总人数
+const int M = 26 * 26 * 26 * 10;  // 由姓名散列的数字上界
+vector<int> selectCourse[M];  // 每个学生选择的课程编号
+
+int getId(string name) {
+	int id = 0;
+	for (int i = 0; i < 3; i++) {
+		id = id * 26 + (name[i] - 'A');
+	}
+	id = id * 10 + (name[3] - '0');
+	return id;
+}
+
+int main() {
+	string name;
+	int n, k;  // 人数及课程数
+	cin >> n >> k;
+	for (int i = 0; i < k; i++) {
+		int course, x;
+		cin >> course >> x;  // 输入课程数和选课人数  
+		for (int j = 0; j < x; j++) {  
+			cin >> name;
+			int id = getId(name);
+			selectCourse[id].push_back(course);
+		}
+	}
+
+	for (int i = 0; i < n; i++) {
+		cin >> name;
+		int id = getId(name);
+		sort(selectCourse[id].begin(), selectCourse[id].end());
+		printf("%s %d", name.c_str(), selectCourse[id].size());
+		for (int j = 0; j < selectCourse[id].size(); j++) {
+			printf(" %d", selectCourse[id][j]);
+		}
+		printf("\n");
+	}
+	system("pause");
+	return 0;
+}
+
+```
+
+## 1047 ☆ Student List for Course
+
+避免直接对字符串排序，可以用编号P235
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <vector>
+#include <cstring>
+#include <algorithm>
+using namespace std;
+long long map[256];  // 0-9、a-z与0-35相对应
+
+const int maxn = 40001;  // 总人数
+const int maxc = 2501;  // 由姓名散列的数字上界
+
+char name[maxn][5];  // maxn个学生
+vector<int> course[maxc];  // course[i]存放第i门课的所有学生编号
+
+bool cmp(int a, int b) {
+	return strcmp(name[a], name[b]) < 0;  // 按姓名字典序从小到大排序
+}
+
+int main() {
+	int n, k, c, courseID;  // 人数及课程数
+	cin >> n >> k;  // 学生人数及课程数
+	for (int i = 0; i < n; i++) {
+		scanf("%s %d", name[i], &c);  // 学生姓名及选课数
+		for (int j = 0; j < c; j++) {  
+			scanf("%d", &courseID);
+			course[courseID].push_back(i);  //将学生i加入第courseID门课中
+		}
+	}
+
+	for (int i = 1; i <= k; i++) {
+		printf("%d %d\n", i, course[i].size());
+		sort(course[i].begin(), course[i].end(), cmp);  // 对第i门课的学生排序!!!根据name排其序号！！
+		for (int j = 0; j < course[i].size(); j++) {
+			printf("%s\n", name[course[i][j]]);  // 输出学生姓名
+		}
+	}
+	system("pause");
+	return 0;
+}
+
+```
+
+## 1044 ☆ 火星数字
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <cstring>
+#include <string>
+#include <map>
+using namespace std;
+// [0.,12]的火星文
+string unitDigit[13] = { "tret", "jan", "feb", "mar", "apr", "may", "jun", "jly", "aug", "sep", "oct", "nov", "dec" };
+// 13的[0，12]倍火星文
+string tenDigit[13] = { "tret", "tam", "hel", "maa", "huh", "tou", "kes", "hei", "elo", "syy", "lok", "mer", "jou" };
+
+string numToStr[170];  // 数字 → 火星文 !!!见下init，实质就是hash
+map<string, int> strToNum;  // 火星文 → 数字  用map进行字符串到数字的映射
+
+void init() {  // !!!
+	for (int i = 0; i < 13; i++) {
+		numToStr[i] = unitDigit[i];  // 个位为[0, 12]， 十位为0
+		strToNum[unitDigit[i]] = i;
+		numToStr[i * 13] = tenDigit[i];
+		strToNum[tenDigit[i]] = i * 13;  
+	}
+	for (int i = 1; i < 13; i++) {  // 十位
+		for (int j = 1; j < 13; j++) {  // 个位，注意从1开始计数
+			string str = tenDigit[i] + " " + unitDigit[j];  // 火星文
+			numToStr[i * 13 + j] = str;  // 数字 → 火星文
+			strToNum[str] = i * 13 + j;  // 火星文 → 数字
+		}
+	}
+}
+int main() {
+	init();  // 打表
+	int t;
+	cin >> t;
+	getchar();  // 吸收一下回车
+	while (t--) {
+		string str;
+		getline(cin, str);
+		if (str[0] >= '0' && str[0] <= '9') {  // 如果是数字
+			int num = 0;
+			for (int i = 0; i < str.length(); i++) {
+				num = num * 10 + (str[i] - '0');
+			}
+			cout << numToStr[num] << endl;
+		}
+		else {  // 如果是火星文
+			cout << strToNum[str] << endl;
+		}
+	}
 	system("pause");
 	return 0;
 }

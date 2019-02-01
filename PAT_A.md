@@ -860,3 +860,449 @@ int main() {
 }
 ```
 
+## 1041 Be Unique
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <vector>
+using namespace std;
+
+int hashTable[10001] = { 0 };
+int num[100001];
+// 注意此题应保存原来的数字输入顺序!!!
+
+
+int main() {
+	int n;
+	cin >> n;
+	for (int i = 0; i < n; i++) {
+		cin >> num[i];
+		hashTable[num[i]]++;
+	}
+	int ans = -1;
+	for (int i = 0; i < n; i++) {
+		if (hashTable[num[i]] == 1) {
+			ans = num[i];
+			break;
+		}
+	}
+	if (ans == -1)
+		cout << "None";
+	else
+		cout << ans;
+	system("pause");
+	return 0;
+}
+```
+
+## String Subtraction
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <vector>
+#include <string>
+using namespace std;
+
+int main() {
+	bool hashTable[128];
+	for (int i = 0; i < 128; i++) {
+		hashTable[i] = true;
+	}
+
+	string s1, s2;
+	int pos;
+	getline(cin, s1);
+	getline(cin, s2);
+
+	for (int i = 0; i < s2.size(); i++) {
+		pos = s2[i];
+		hashTable[pos] = false;
+	}
+
+	for (int i = 0; i < s1.size(); i++) {
+		pos = s1[i];
+		if (hashTable[pos])
+			cout << s1[i];
+	}
+
+	system("pause");
+	return 0;
+}
+```
+
+## 1048 🔺Find Coins
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+/* !!!
+  如果申明的是全局/静态数组，系统会把数组的内容自动初始化为0。
+  如果申明的是局部数组，数组的内容会是随机的，不一定是0。
+  */
+int hashTable[1005];
+
+int main() {
+	int n, m, a;
+	//int hashTable[1005] = {0};  // !!! 不过这样也可以全部置零，不过只能置零，其他的数只是设置第一个。
+	cin >> n >> m;
+	for (int i = 0; i < n; i++) {
+		cin >> a;
+		hashTable[a]++;
+	}
+	
+	for (int i = 1; i < m; i++) {
+		if (hashTable[i] && hashTable[m - i]) { // 找到一对数，它们和为ms
+			if (i == m - i && hashTable[i] <= 1)  // i == m - i 时必须保证数字i的个数大于等于2
+				continue;
+			cout << i << ' ' << m - i;
+			system("pause");
+			return 0;
+		}
+	}
+
+	cout << "No Solution";
+	system("pause");
+	return 0;
+}
+
+```
+
+## 1037 ☆ magic coupon
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+const int maxn = 100001;
+
+int main() {
+	int n, m, coupon[maxn], product[maxn];
+	cin >> n;
+	for (int i = 0; i < n; i++) 
+		cin >> coupon[i];
+	cin >> m;
+	for (int i = 0; i < m; i++)
+		cin >> product[i];
+	sort(coupon, coupon + n);
+	sort(product, product + m);
+	int i, j, ans = 0;
+	for (i = 0; i < n && i < m && coupon[i] < 0 && product[i] < 0; i++) {
+		ans += coupon[i] * product[i];
+	}
+	for (i = n - 1, j = m - 1; i >= 0 && j >= 0 && coupon[i] > 0 && product[j] > 0; i--, j--) {
+		ans += coupon[i] * product[j];
+	}
+	cout << ans;
+	system("pause");
+	return 0;
+}
+
+```
+
+## 1067 🔺 ??? Sort with swap(0, i)
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+const int maxn = 100001;
+int pos[maxn];
+
+int main() {
+	int n, ans = 0;  // ans 表示
+	cin >> n;
+	int left = n - 1, num;
+	for (int i = 0; i < n; i++) {
+		cin >> num;  // num 所在位置为i
+		pos[num] = i;
+		if (num == i && num != 0) {
+			left--;
+		}
+	}
+	int k = 1;
+	while (left > 0) {
+		if (pos[0] == 0) {
+			while (k < n) {
+				if (pos[k] != k) {
+					swap(pos[0], pos[k]);
+					ans++;
+					break;
+				}
+				k++;
+			}
+		}
+		while(pos[0] != 0) {
+			swap(pos[0], pos[pos[0]]);
+			ans++;
+			left--;
+		}
+	}
+	cout << ans;
+	system("pause");
+	return 0;
+}
+```
+
+## 1038 ☆Recover the Smallest Number
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+bool cmp(string a, string b) {
+	return a + b < b + a;  // 如果a+b<b+a，就把a排在前面
+}
+string nums[10001];
+
+int main() {
+	int n;
+	cin >> n;
+	for (int i = 0; i < n; i++) {
+		cin >> nums[i];
+	}
+	sort(nums, nums + n, cmp);
+	string ans;
+	for (int i = 0; i < n; i++) {
+		ans += nums[i];
+	}
+	while (ans[0] == '0' && ans.size() != 0) {
+		ans.erase(ans.begin());
+	}
+	if (ans.size() == 0)
+		cout << 0;
+	else
+		cout << ans;
+	system("pause");
+	return 0;
+}
+```
+
+## 1063 Set Similarity
+
+set的用法，并集，交集。
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <vector>
+#include <cstring>
+#include <set>
+#include <algorithm>
+using namespace std;
+const int N = 51;
+set<int> st[N];  // N 个集合
+
+// 比较集合x和集合y
+void compare(int x, int y) {
+	int totalNum = st[y].size(), sameNum = 0;
+	for (set<int>::iterator it = st[x].begin(); it != st[x].end(); it++) {
+		if (st[y].find(*it) != st[y].end())
+			sameNum++;
+		else
+			totalNum++;
+	}
+	printf("%.1f%%\n", sameNum * 100.0 / totalNum);  // 输出比率
+}
+
+int main() {
+	int n, k, q, v, st1, st2;
+	cin >> n;
+	for (int i = 1; i <= n; i++) {
+		cin >> k;
+		for (int j = 0; j < k; j++) {
+			cin >> v;
+			st[i].insert(v);
+		}
+	}
+	cin >> q;
+	for (int i = 0; i < q; i++) {
+		cin >> st1 >> st2;
+		compare(st1, st2);
+	}
+	system("pause");
+	return 0;
+}
+
+```
+
+## 1060 ☆ 🔺 Are They Equal  
+
+保留三位的科学计数法
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <cstring>
+#include <string>
+using namespace std;
+int n;
+string deal(string s, int &e) {
+	int k = 0;  // s的下标
+	while (s.length() > 0 && s[0] == '0') {
+		s.erase(s.begin());  // 去掉s的前导零 !!!
+	}
+	if (s[0] == '.') {  // 若去掉前导零后是小数点，说明s是小于1的小数
+		s.erase(s.begin());  // 去掉小数点
+		while (s.length() > 0 && s[0] == '0') {
+			s.erase(s.begin());  // 去掉小数点后非零位前的所有零
+			e--;  // 每去掉一个0，指数e减1
+		}
+	}
+	else {  // 若去掉前导零后不是小数点，则找到后面的小数点删除
+		while (k < s.length() && s[k] != '.') {  // 寻找小数点
+			k++;
+			e++;  // 只要不遇到小数点，就让指数e++
+		}
+		if (k < s.length()) {  // while结束后k < s.length(), 说明遇到了小数点
+			s.erase(s.begin() + k);  // 把小数点删除 
+		}
+	}
+	if (s.length() == 0) {
+		e = 0;  // 如果去除前导零后s的长度为0，则说明这个数本身为0
+	}
+	int num = 0;
+	k = 0;
+	string res;
+	while (num < n) {  // 只要精度没有到n
+		if (k < s.length())
+			res += s[k++];
+		else
+			res += '0';
+		num++;
+	}
+	return res;
+}
+
+int main() {
+	string s1, s2, s3, s4;
+	cin >> n >> s1 >> s2;
+	int e1 = 0, e2 = 0;   // e1, e2为s1, s2的指数
+	s3 = deal(s1, e1);
+	s4 = deal(s2, e2);
+	if (s3 == s4 && e1 == e2) {  // 主体相同且指数相同
+		cout << "YES 0." << s3 << "*10^" << e1 << endl;
+	}
+	else {
+		cout << "NO 0." << s3 << "*10^" << e1 << " 0." << s4 << "*10^" << e2 << endl;
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1054 ☆ The Dominant Color
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <cstring>
+#include <string>
+#include <map>
+using namespace std;
+
+int main() {
+	int n, m, col;
+	cin >> n >> m;
+	map<int, int> count;  // 数字与出现次数的map映射
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			scanf("%d", &col);
+			if (count.find(col) != count.end())
+				count[col]++;
+			else
+				count[col] = 1;
+		}
+	}
+
+	int k = 0, MAX = 0;
+	for (map<int, int>::iterator it = count.begin(); it != count.end(); it++) {
+		if (it->second > MAX) {
+			k = it->first;
+			MAX = it->second;
+		}
+	}
+	cout << k << endl;
+	system("pause");
+	return 0;
+}
+```
+
+## 1071 ☆ 🔺 speech patterns
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <cstring>
+#include <string>
+#include <map>
+using namespace std;
+
+bool check(char c) {  // 检查字符c是否是[0,9]、[A,Z]、[a,z]
+	if (c >= '0' && c <= '9') return true;
+	if (c >= 'a' && c <= 'z') return true;
+	if (c >= 'A' && c <= 'Z') return true;
+	return false;
+}
+
+int main() {
+	map<string, int> count;   // 统计字符串出现的次数
+	string str;
+	getline(cin, str);
+	int i = 0;  // 下标
+	while (i < str.length()) {
+		string word;
+		//将一句话拆分成单词!!!
+		while (i < str.length() && check(str[i]) == true) {   // 如果是单词的字符
+			if (str[i] >= 'A' && str[i] <= 'Z') {
+				str[i] += 32;  // 将大写字母转换成小写字母
+			}
+			word += str[i];
+			i++;
+		}
+		if (count.find(word) == count.end())
+			count[word] = 1;
+		else
+			count[word]++;
+		while (i < str.length() && check(str[i]) == false)  // 跳过非单词字符!!!
+			i++;
+	}
+	string ans;
+	int MAX = 0;
+	for (map<string, int>::iterator it = count.begin(); it != count.end(); it++) {
+		if (it->second > MAX) {
+			MAX = it->second;
+			ans = it->first;
+		}
+	}
+	cout << ans << " " << MAX << endl;
+	system("pause");
+	return 0;
+}
+```
+
