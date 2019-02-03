@@ -973,7 +973,53 @@ int main() {
 	system("pause");
 	return 0;
 }
+```
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
 
+int a[100001];
+// 法2：
+// !!! 二分法，二分查找
+// left 和 right 初始分别为0为n-1，key即m-a[i]
+int bin(int left, int right, int key) {
+	int mid;
+	while (left <= right) {
+		mid = (left + right) / 2; 
+		if (a[mid] == key)
+			return mid;
+		else if (a[mid] > key)
+			right = mid - 1;
+		else
+			left = mid + 1;
+	}
+	return -1;  // 如果没有找到Key,返回-1
+}
+
+int main() {
+	int n, m, i;
+	cin >> n >> m;
+	for (i = 0; i < n; i++) {
+		cin >> a[i];		
+	}
+	sort(a, a + n);
+	for (i = 0; i < n; i++) {
+		int pos = bin(0, n - 1, m - a[i]);
+		if (pos != -1 && i != pos) { // 找到一对数，它们和为ms
+			cout << a[i] << ' ' << m - a[i];
+			system("pause");
+			return 0;
+		}
+	}
+	cout << "No Solution";
+	system("pause");
+	return 0;
+}
 ```
 
 ## 1037 ☆ magic coupon
@@ -1301,6 +1347,374 @@ int main() {
 		}
 	}
 	cout << ans << " " << MAX << endl;
+	system("pause");
+	return 0;
+}
+```
+
+## 1022  ☆ Digital Library
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <string>
+#include <map>
+#include <set>
+using namespace std;
+
+// 5个map变量分别建立书名、作者、关键词、出版社及出版年份与id的映射关系!!!
+map<string, set<int>> mpTitle, mpAuthor, mpKey, mpPub, mpYear;
+
+void query(map<string, set<int>>& mp, string& str) {
+	if (mp.find(str) == mp.end())
+		printf("Not Found\n");
+	else {
+		for (set<int>::iterator it = mp[str].begin(); it != mp[str].end(); it++) {
+			printf("%07d\n", *it);
+		}
+	}
+}
+int main() {
+	int n, m, id, type;
+	string title, author, key, pub, year;
+	scanf("%d", &n);
+	for (int i = 0; i < n; i++) {
+		scanf("%d", &id);
+		getchar();
+		getline(cin, title);
+		mpTitle[title].insert(id);
+		getline(cin, author);
+		mpAuthor[author].insert(id);
+		// 每本书对应多个关键词!!!
+		while (cin >> key) {  // 每次读入单个关键词key
+			mpKey[key].insert(id);  // 
+			char c = getchar();  // 接收关键词Key之后的字符
+			if (c == '\n') break;
+		}
+		getline(cin, pub);
+		mpPub[pub].insert(id);
+		getline(cin, year);
+		mpYear[year].insert(id);
+	}
+
+	string temp;
+	scanf("%d", &m);  // 查询次数
+	for (int i = 0; i < m; i++) {
+		scanf("%d: ", &type);  // 查询类型!!!
+		getline(cin, temp);
+		cout << type << ": " << temp << endl;
+		if (type == 1) query(mpTitle, temp);
+		else if (type == 2) query(mpAuthor, temp);
+		else if (type == 3) query(mpKey, temp);
+		else if (type == 4) query(mpPub, temp);
+		else query(mpYear, temp);
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1051 ☆ 🔺 Pop Sequence
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <stack>
+using namespace std;
+const int maxn = 1001;
+int arr[maxn];  // 保存题目给定的出栈序列
+stack<int> st;  // 定义栈st
+
+int main() {
+	int m, n, t;
+	scanf("%d%d%d", &m, &n, &t);
+	while (t--) { // 循环执行k次
+		while (!st.empty()) {  // 清空栈
+			st.pop();
+		}
+		for (int i = 1; i <= n; i++) {
+			scanf("%d", &arr[i]);
+		}
+		int current = 1;  // 指向栈序列中的待出栈元素
+		bool flag = true;
+		for (int i = 1; i <= n; i++) {
+			st.push(i);
+			if (st.size() > m) {  // 如果此时栈中元素个数大于容量m,则序列非法
+				flag = false;
+				break;
+			}
+			while (!st.empty() && st.top() == arr[current]) {
+				st.pop();  // 反复弹出栈 !!!
+				current++;
+			}
+		}
+		if (st.empty() == true && flag == true) {
+			printf("YES\n");
+		}
+		else {
+			printf("NO\n");
+		}
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1056 ☆ 🔺 Mice and Rice
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <queue>
+using namespace std;
+const int maxn = 1001;
+struct mouth {
+	int weight;  // 质量
+	int R;  // 排名
+}mouse[maxn];
+
+int main() {
+	int np, ng, order;
+	scanf("%d%d", &np, &ng);
+	for (int i = 0; i < np; i++) {
+		scanf("%d ", &mouse[i].weight);
+	}
+	queue<int> q;
+	for (int i = 0; i < np; i++) {
+		scanf("%d", &order);
+		q.push(order);  // 按顺序把老鼠们的标号入队
+	}
+	int temp = np, group;  // temp为当前轮比赛总老鼠数，group为组数
+	while (q.size() != 1) {
+		// 计算group,即当前轮分为几组进行比赛
+		if (temp % ng == 0) group = temp / ng;
+		else group = temp / ng + 1;
+		// 枚举每一组，选出该组老鼠中质量最大的
+		for (int i = 0; i < group; i++) {
+			int k = q.front();
+			for (int j = 0; j < ng; j++) {
+				// 在最后一组老鼠数不足NG时，j超过最大老鼠数量，退出循环
+				if (i * ng + j >= temp) break;  
+				int front = q.front();
+				if (mouse[front].weight > mouse[k].weight)
+					k = front; 
+				mouse[front].R = group + 1;
+				q.pop();
+			}
+			q.push(k);  // 胜利的老鼠晋级
+		}
+		temp = group;  // group只老鼠晋级，因此下轮老鼠总数为group
+	}
+	mouse[q.front()].R = 1;  // 当队列中只剩1只老鼠时，令其排名为1.
+	// 输出所有所有的信息
+	for (int i = 0; i < np; i++) {
+		printf("%d", mouse[i].R);
+		if (i < np - 1)
+			printf(" ");
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1032 Sharing
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <queue>
+using namespace std;
+const int maxn = 100001;
+
+struct node {
+	char data;  // 数字域
+	int next;  // 指针域
+	bool flag;  // 结点是否在第一条链表中出现
+}nodes[maxn];
+
+int main() {
+	for (int i = 0; i < maxn; i++) {
+		nodes[i].flag = false;
+	}
+	int s1, s2, n;
+	scanf("%d %d %d", &s1, &s2, &n);
+	int address, next;  // 结点地址与后继结点地址
+	char data;  // 数据
+	for (int i = 0; i < n; i++) {
+		scanf("%d %c %d", &address, &data, &next);
+		nodes[address].data = data;
+		nodes[address].next = next;
+	}
+	// 这题的两条链表都是按照顺序来的，所以采用下述方法：!!!
+	int p;
+	for (p = s1; p != -1; p = nodes[p].next) {
+		nodes[p].flag = true;  // 枚举第一条链表所有节点，表示啊啊啊我已经属于第一条链表噢！
+	}
+	for (p = s2; p != -1; p = nodes[p].next) {
+		if (nodes[p].flag == true)  // 找到第一个已经在第一条链表中出现的节点
+			break;
+	}
+	if (p != -1)
+		printf("%05d\n", p);
+	else
+		printf("-1\n");
+	system("pause");
+	return 0;
+}
+```
+
+## 1044 ☆ 🔺 ??? Shopping in Mars
+
+端点有点问题，晕
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <queue>
+#include <climits>
+using namespace std;
+const int maxn = 100001;
+int sum[maxn];
+
+// 返回[l, r]内第一个大于x的位置 !!!
+int upper_bound(int l, int r, int x) {
+	int left = l, right = r, mid;
+	while (left < right) {
+		mid = (left + right) / 2;
+		if (sum[mid] > x) {
+			right = mid;
+		}
+		else {
+			left = mid + 1;
+		}
+	}
+	return left;
+}
+
+int main() {
+	int n, s, nears = INT_MAX;
+	scanf("%d%d", &n, &s);  
+	sum[0] = 0;
+	for (int i = 1; i <= n; i++) {
+		scanf("%d", &sum[i]);
+		sum[i] += sum[i - 1];
+	}
+	for (int i = 1; i <= n; i++) {  // 枚举左端点 !!!
+		int j = upper_bound(i, n, sum[i - 1] + s);  // 求右端点
+		if (sum[j - 1] - sum[i - 1] == s) {  // 查找成功
+			nears = s;
+			break;
+		}
+		else if (j <= n && sum[j - 1] - sum[i - 1] < nears) {
+			// 存在大于s的解并且小于nears
+			nears = sum[j] - sum[i - 1];  // 更新当前nears
+		}
+	}
+	// 根据上述找到的nears，再次遍历找到这对端点值
+	for (int i = 1; i <= n; i++) {
+		int j = upper_bound(i, n, sum[i - 1] + s);
+		if (sum[j - 1] - sum[i - 1] == nears) {
+			printf("%d-%d\n", i, j - 1);  // 输出左端点和右端点（注意是j - 1）
+		}
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1089 ☆ 🔺 ??? Insert or Merge
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+const int maxn = 101;
+int origin[maxn], tempOri[maxn], changed[maxn];  // 原始数组，原始备份数组，目标数组
+int n; // 元素个数
+
+bool isSame(int a[], int b[]) {
+	for (int i = 0; i < n; i++) {
+		if (a[i] != b[i])
+			return false;
+	}
+	return true;
+}
+
+void showArray(int a[]) {
+	for (int i = 0; i < n; i++) {
+		cout << a[i];
+		if (i < n - 1)
+			cout << " ";
+	}
+	cout << endl;
+}
+
+bool insertSort() {  // 插入排序
+	bool flag = false; // 记录是否存在数组中间步骤与changed相同
+	for (int i = 1; i < n; i++) {  // 进行n-1趟排序
+		if (i != 1 && isSame(tempOri, changed)) {
+			flag = true;  // 中间步骤与目标相同，且不是初始序列
+		}
+		// 以下是插入部分
+		int temp = tempOri[i], j = i;
+		while (j > 0 && tempOri[j - 1] > temp) {
+			tempOri[j] = tempOri[j - 1];
+			j--;
+		}
+		tempOri[j] = temp;
+		if (flag == true) {
+			return true;  // 如果flag 为true，则说明已达到目标数组，返回true
+		}
+	}
+	return false;  // 无法达到目标数组，返回false
+}
+
+void mergeSort() {  // 归并排序
+	bool flag = false;  // 记录是否存数组中间步骤与changed数组相同
+	// 以下为归并排序部分
+	for (int step = 2; step / 2 <= n; step *= 2) {
+		if(step != 2 && isSame(tempOri, changed))
+			flag = true;  // 中间步骤与目标相同，且不是初始序列
+		for (int i = 0; i < n; i += step) {
+			sort(tempOri + i, tempOri + min(i + step, n));
+		}
+		if (flag == true) {  // 已到达目标数组，输出tempOri数组
+			showArray(tempOri);
+			return;
+		}
+	}
+	
+}
+	
+int main() {
+	cin >> n;
+	for (int i = 0; i < n; i++) {
+		cin >> origin[i];
+		tempOri[i] = origin[i];  // tempOri数组为备份，排序过程在tempOri上进行
+	}
+	for (int i = 0; i < n; i++) {
+		cin >> changed[i];  // 目标数组
+	}
+	if (insertSort()) {  // 如果插入排序中找到目标数组
+		cout << "Insertion Sort" << endl;
+		showArray(tempOri);
+	}
+	else {  // 到达此处时一定是归并排序
+		cout << "Merge Sort" << endl;
+		for (int i = 0; i < n; i++) {
+			tempOri[i] = origin[i];  //还原tempOri数组
+		}
+		mergeSort();  // 归并排序
+	}
 	system("pause");
 	return 0;
 }

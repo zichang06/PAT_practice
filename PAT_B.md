@@ -1144,3 +1144,117 @@ int main() {
 }
 ```
 
+## 1052 ☆ 🔺 Linked List Sorting
+
+静态链表排序
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <queue>
+#include <algorithm>
+using namespace std;
+const int maxn = 100001;
+
+struct node {
+	int address, data, next;
+	bool flag;  // 结点是否在链表上
+}nodes[maxn];
+
+// 筛选有效结点，并按data从小到大排序
+bool cmp(node a, node b) {  // !!!
+	if (a.flag == false || b.flag == false) {
+		return a.flag > b.flag;  // 只要a和b中有一个无效结点，就把无效结点放到后面去 !!!
+	}
+	else {
+		return a.data < b.data;  // 如果都是有效结点，则按要求排序
+	}
+}
+int main() {
+	for (int i = 0; i < maxn; i++) {
+		nodes[i].flag = false;
+	}
+	int n, begin, address;
+	scanf("%d%d", &n, &begin);
+	for (int i = 0; i < n; i++) {
+		scanf("%d", &address);
+		scanf("%d%d", &nodes[address].data, &nodes[address].next);
+		nodes[address].address = address;
+	}
+	int count = 0, p = begin;
+	// 枚举链表，对flag进行标记，同时计数有效结点个数 
+	while (p != -1) {
+		nodes[p].flag = true;
+		count++;
+		p = nodes[p].next;
+	}
+	if (count == 0) {
+		printf("0 -1");  // 特判，新链表没有结点时输出0 -1. !!!
+	}
+	else {
+		// 筛选有效结点，并按data从小到大排序
+		sort(nodes, nodes + maxn, cmp);
+		printf("%d %05d\n", count, nodes[0].address);  // 防止-1被%05d话，提前判断
+		for (int i = 0; i < count; i++) {
+			if (i != count - 1) {
+				printf("%05d %d %05d\n", nodes[i].address, nodes[i].data, nodes[i + 1].address);
+			}
+			else {
+				printf("%05d %d -1\n", nodes[i].address, nodes[i].data);
+			}
+		}
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## ☆ 🔺1029  Median
+
+??? 还有一两个样例没过，内存超限，PAT去年新增加的卡内存考点
+
+网上参考：https://blog.csdn.net/Hide_in_Code/article/details/81986596，好困下次做吧
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <queue>
+#include <limits.h>
+using namespace std;
+const int maxn = 200001;
+
+int s1[maxn], s2[maxn];  // 两个递增序列
+int main() {
+	int n, m;
+	cin >> n;
+	for (int i = 0; i < n; i++) {
+		scanf("%d", &s1[i]);
+	}
+	cin >> m;
+	for (int i = 0; i < m; i++) {
+		scanf("%d", &s2[i]);
+	}
+	s1[n] = s2[m] = INT_MAX;
+	int medianPos = (n + m - 1) / 2;  //事先找出 medianPos 为中间位置
+	int i = 0, j = 0, count = 0;   // count 计数当前位置
+	// 只要count 未达到medianPos, 就继续循环!!!直到找出两个递增序列中是中位数那个数字
+	while (count < medianPos) {  
+		if (s1[i] < s2[j])  
+			i++;
+		else
+			j++;
+		count++;
+	}
+	// count 达到中位数位置时，上述while循环中没有对s1[i]和s2[j]的大小进行判断
+	if (s1[i] < s2[j]) {  // 输出两个序列当前位置较小的元素
+		cout << s1[i];
+	}
+	else
+		cout << s2[j];
+	system("pause");
+	return 0;
+}
+```
+
