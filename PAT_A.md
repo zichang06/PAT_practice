@@ -1720,3 +1720,147 @@ int main() {
 }
 ```
 
+## 1093 ☆ Count PAT's
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+const int maxn = 100001;
+const int mod = 1000000007;
+// !!! 常用小技巧，不然这题会有样例WA
+// !!! 1000000007 是最小的十位质数。模1000000007，可以保证值永远在int的范围内。
+int leftNumP[maxn] = { 0 };  // 每一位左边（含）P的个数
+
+int main() {
+	string str;
+	getline(cin, str);
+	int len = str.length();  // 长度
+	for (int i = 0; i < len; i++) {  // 从左到右遍历字符串
+		if (i > 0) {  // 如果不是0号位
+			leftNumP[i] = leftNumP[i - 1];
+		}
+		if (str[i] == 'P') {  // 当前位是P
+			leftNumP[i]++;
+		}
+	}
+	// ans位答案，rightNumT记录右边T的个数
+	int ans = 0, rightNumT = 0;
+	for (int i = len - 1; i >= 0; i--) {  // 从右到左遍历字符串
+		if (str[i] == 'T') {  // 当前位是T
+			rightNumT++;  // 右边T的个数加1
+		}
+		else if(str[i] == 'A'){  // 当前位是A
+			ans = (ans + leftNumP[i] * rightNumT) % mod;  // 累计乘积
+		}
+	}
+	printf("%d\n", ans);  // 输出结果
+	system("pause");
+	return 0;
+}
+```
+
+## 1101 Quick Sort
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <stdio.h>
+#include <climits>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+const int maxn = 100001;
+// a为序列，leftMax和rightMin分别为每一位左边最大的数和右边最小的数
+int a[maxn], leftMax[maxn], rightMin[maxn];
+// ans记录所有的主元，num为主元个数
+int ans[maxn], num = 0;
+
+int main() {
+	int n;
+	cin >> n;
+	for (int i = 0; i < n; i++) {
+		cin >> a[i];
+	}
+	leftMax[0] = 0;  // A[0]左边没有比它大的数
+	for (int i = 1; i < n; i++) {
+		leftMax[i] = max(leftMax[i - 1], a[i - 1]);  // !!!
+	}
+	rightMin[n - 1] = INT_MAX;
+	for (int i = n - 2; i >= 0; i--) {
+		rightMin[i] = min(rightMin[i + 1], a[i + 1]);
+	}
+	for (int i = 0; i < n; i++) {
+		// 左边的数比它小，右边所有数比它大
+		if (leftMax[i] < a[i] && rightMin[i] > a[i]) {
+			ans[num++] = a[i];  // 记录主元
+		}
+	}
+	cout << num << endl;
+	for (int i = 0; i < num; i++) {
+		cout << ans[i];
+		if (i < num - 1)
+			cout << " ";
+	}
+	cout << endl;
+	system("pause");
+	return 0;
+}
+```
+
+## 1069 ☆ 数字黑洞
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <climits>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+bool cmp(int a, int b) {  
+	return a > b;
+}
+
+void toArray(int n, int num[]) {  // 将n的每一位存到num数组中
+	for (int i = 0; i < 4; i++) {
+		num[i] = n % 10;
+		n /= 10;
+	}
+}
+
+int to_number(int num[]) {
+	int sum = 0;
+	for (int i = 0; i < 4; i++) {
+		sum = sum * 10 + num[i];
+	}
+	return sum;
+}
+int main() {
+	// MIN和MAX分别表示递增排序和递减排序后得到的最小值和最大值
+	int n, min, max;
+	cin >> n;
+	int num[5];
+	while (1) {
+		toArray(n, num);  
+		sort(num, num + 4); // 从小到大排序!!!
+		min = to_number(num);
+		sort(num, num + 4, cmp);  // 从大到小排序!!!
+		max = to_number(num);
+		n = max - min;
+		printf("%04d - %04d = %04d\n", max, min, n);
+		if (n == 0 || n == 6174)
+			break;  // 如果下一个数是0或者6174则退出
+	}
+	system("pause");
+	return 0;
+}
+```
+
