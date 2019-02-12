@@ -6,7 +6,7 @@
 
 28、16、55、75、83、
 
-80、
+80、62
 
 # 有疑问的题
 
@@ -1862,5 +1862,1166 @@ int main() {
 	system("pause");
 	return 0;
 }
+```
+
+## 1069 ☆Sum of Number Segments
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <climits>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+int main() {
+	int n;
+	double v, ans = 0;
+	cin >> n;
+	for (int i = 1; i <= n; i++) {
+		cin >> v;
+		ans += v * i * (n + 1 - i);
+	}
+	printf("%0.2f\n", ans);
+	system("pause");
+	return 0;
+}
+```
+
+## 1008 Elevator
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <climits>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+int num[101] = {0};
+
+int main() {
+	int n, sum = 0, now, last = 0;
+	cin >> n;
+	for (int i = 1; i <= n; i++) {
+		cin >> now;
+		if (now > last) {
+			sum += (now - last) * 6;
+		}
+		else {
+			sum += (last - now) * 4;
+		}
+		sum += 5;
+		last = now;
+	}
+	cout << sum;
+	system("pause");
+	return 0;
+}
+```
+
+## 1049 ☆ ??? Counting ones
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <climits>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+int num[101] = {0};
+
+int main() {
+	int n, a = 1, ans = 0;
+	int left, now, right;
+	cin >> n;
+	while (n / a != 0) {
+		left = n / (a * 10);
+		now = n / a % 10;
+		right = n % a;
+		if (now == 0)
+			ans += left * a;
+		else if (now == 1)
+			ans += left * a + right + 1;
+		else
+			ans += (left + 1) * a;
+		a *= 10;
+	}
+	cout << ans << endl;
+	system("pause");
+	return 0;
+}
+```
+
+## 1081 ☆ 🔺 Rational Sum
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <climits>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+typedef long long ll;
+ll gcd(ll a, ll b) {  // 求a与b的最大公约数
+	return b == 0 ? a : gcd(b, a % b);  // !!!辗转相除法, 记住
+}
+struct Fraction {  // 分数
+	ll up, down;  // 分子、分母
+ };
+
+Fraction reduction(Fraction result) {  // 化简!!!
+	if (result.down < 0) {  // 分母为负数，令分子分母都变为相反数
+		result.down = -result.down;
+		result.up = -result.up;
+	}
+	if (result.up == 0) { // 如果分子为0
+		result.down = 1;  // 令分母为1
+	}
+	else {  // 如果分子不为0，进行约分
+		int d = gcd(abs(result.up), abs(result.down));
+		result.up /= d;
+		result.down /= d;
+	}
+	return result;
+}
+
+Fraction add(Fraction f1, Fraction f2) {
+	Fraction result;
+	result.up = f1.up * f2.down + f2.up * f1.down;
+	result.down = f1.down * f2.down;
+	return reduction(result);
+}
+
+void showResult(Fraction r) {
+	reduction(r);
+	if (r.down == 1)
+		cout << r.up << endl;  // 整数
+	else if (abs(r.up) > r.down) {  // 假分数
+		printf("%lld %lld/%lld\n", r.up / r.down, abs(r.up) % r.down, r.down);
+	}
+	else {
+		printf("%lld/%lld\n", r.up, r.down);
+	}
+}
+int main() {
+	int n;
+	cin >> n;
+	Fraction sum, temp;
+	sum.up = 0, sum.down = 1;  // ！!!!先这么设置
+	for (int i = 0; i < n; i++) {
+		scanf("%lld/%lld", &temp.up, &temp.down);
+		sum = add(sum, temp);
+	}
+	showResult(sum);
+	system("pause");
+	return 0;
+}
+```
+
+## 1088 ☆ 🔺 Rational Arithmetic
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <climits>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+typedef long long ll;
+ll gcd(ll a, ll b) {  // 求a与b的最大公约数
+	return b == 0 ? a : gcd(b, a % b);  // !!!辗转相除法, 记住
+}
+struct Fraction {  // 分数
+	ll up, down;  // 分子、分母
+ }a, b;
+
+Fraction reduction(Fraction result) {  // 化简!!!
+	if (result.down < 0) {  // 分母为负数，令分子分母都变为相反数
+		result.down = -result.down;
+		result.up = -result.up;
+	}
+	if (result.up == 0) { // 如果分子为0
+		result.down = 1;  // 令分母为1,该数成为整数
+	}
+	else {  // 如果分子不为0，进行约分
+		int d = gcd(abs(result.up), abs(result.down));
+		result.up /= d;
+		result.down /= d;
+	}
+	return result;
+}
+
+Fraction add(Fraction f1, Fraction f2) {
+	Fraction result;
+	result.up = f1.up * f2.down + f2.up * f1.down;
+	result.down = f1.down * f2.down;
+	return reduction(result);
+}
+Fraction minu(Fraction f1, Fraction f2) {
+	Fraction result;
+	result.up = f1.up * f2.down - f2.up * f1.down;
+	result.down = f1.down * f2.down;
+	return reduction(result);
+}
+Fraction multi(Fraction f1, Fraction f2) {
+	Fraction result;
+	result.up = f1.up * f2.up;
+	result.down = f1.down * f2.down;
+	return reduction(result);
+}
+Fraction divide(Fraction f1, Fraction f2) {
+	Fraction result;
+	result.up = f1.up * f2.down;
+	result.down = f1.down * f2.up;
+	return reduction(result);
+}
+
+void showResult(Fraction r) {  // !!!
+	r = reduction(r);
+	if (r.up < 0)
+		printf("(");
+	if (r.down == 1)
+		cout << r.up;  // 整数
+	else if (abs(r.up) > r.down) {  // 假分数
+		printf("%lld %lld/%lld", r.up / r.down, abs(r.up) % r.down, r.down);
+	}
+	else {
+		printf("%lld/%lld", r.up, r.down);
+	}
+	if (r.up < 0)
+		printf(")");
+}
+int main() {
+	scanf("%lld/%lld %lld/%lld", &a.up, &a.down, &b.up, &b.down);
+	// 加法
+	showResult(a);
+	printf(" + ");
+	showResult(b);
+	printf(" = ");
+	showResult(add(a, b));
+	printf("\n");
+	// 减法
+	showResult(a);
+	printf(" - ");
+	showResult(b);
+	printf(" = ");
+	showResult(minu(a, b));
+	printf("\n");
+	// 乘法
+	showResult(a);
+	printf(" * ");
+	showResult(b);
+	printf(" = ");
+	showResult(multi(a, b));
+	printf("\n");
+	// 除法
+	showResult(a);
+	printf(" / ");
+	showResult(b);
+	printf(" = ");
+	if (b.up == 0)
+		printf("Inf");  // !!!
+	else
+		showResult(divide(a, b));
+	printf("\n");
+	system("pause");
+	return 0;
+}
+```
+
+## 1015 ☆ 🔺 Reversing Primes
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <climits>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+using namespace std;
+int d[111];
+
+bool isPrime(int n) {  // 判断n是否为素数!!!
+	if (n <= 1)
+		return false;
+	int sqr = (int)sqrt(1.0 * n);
+	for (int i = 2; i <= sqr; i++) {
+		if (n % i == 0)
+			return false;
+	}
+	return true;
+}
+
+int main() {
+	int n, radix;
+	while (scanf("%d", &n) != EOF) {
+		if (n < 0)
+			break;  // 当n为负数时，退出循环
+		scanf("%d", &radix);
+		if (isPrime(n) == false) {  // n不是素数，输出No,结束算法
+			cout << "No" << endl;
+		}
+		else {
+			int len = 0;
+			d[len++] = n % radix;
+			n /= radix;
+			while (n != 0) {  // 进制转换
+				d[len++] = n % radix;
+				n /= radix;
+			}
+			for (int i = 0; i < len; i++) {  // 按逆序转换进制!!!
+				n = n * radix + d[i];
+			}
+			if (isPrime(n) == true) {
+				cout << "Yes" << endl;
+			}
+			else {
+				cout << "No" << endl;
+			}
+
+		}
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1078 ☆ Hashing
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <climits>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+using namespace std;
+const int maxn = 10001;
+bool hashTable[maxn] = { 0 };
+// hashTable[x] == false 表示x号位未被占用
+
+bool isPrime(int n) {  // 判断n是否为素数
+	if (n <= 1)
+		return false;
+	int sqr = (int)sqrt(1.0 * n);
+	for (int i = 2; i <= sqr; i++) {
+		if (n % i == 0)
+			return false;
+	}
+	return true;
+}
+
+int main() {
+	int n, tsize, a;
+	cin >> tsize >> n;
+	while (isPrime(tsize) == false) {  // 寻找第一个大于等于原来tsize的质数
+		tsize++;
+	}
+	for (int i = 0; i < n; i++) {
+		cin >> a;
+		int m = a % tsize;
+		if (hashTable[m] == false) {
+			hashTable[m] = true;
+			if (i == 0)
+				cout << m;
+			else
+				cout << " " << m;
+		}
+		else {
+			int step;  // 二次方探查法步长
+			for (step = 1; step < tsize; step++) {
+				m = (a + step * step) % tsize;  // 下一个检测值
+				if (hashTable[m] == false) {  // 下一个检测值
+					hashTable[m] = true;
+					if (i == 0)
+						cout << m;
+					else
+						cout << " " << m;
+					break;
+				}
+			}
+			if (step >= tsize) {  // 找不到插入的地方
+				if (i > 0)
+					cout << " ";
+				cout << "-";
+			}
+		}
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1096 ☆ Consecutive Factors
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <climits>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+using namespace std;
+typedef long long ll;
+
+int main() {
+	ll n;
+	cin >> n;
+	ll sqr = (ll)sqrt(1.0 * n), ansI = 0, ansLen = 0;
+	for (ll i = 2; i <= sqr; i++) {  // 遍历连续的第一个整数
+		ll temp = 1, j = i;  // temp为当前连续整数的乘积
+		while (1) {  
+			temp *= j;
+			if (n % temp != 0)  // !!!
+				break;  // 如果不能整除，结束计算
+			if (j - i + 1 > ansLen) {  //发现了更长的长度
+				ansI = i;  // 更新第一个整数
+				ansLen = j - i + 1;
+			}
+			j++;
+		}
+	}
+	if (ansLen == 0) {  // 无解
+		printf("1\n%lld", n);
+	}
+	else {
+		printf("%lld\n", ansLen);
+		for (ll i = 0; i < ansLen; i++) {
+			printf("%lld", ansI + i);
+			if (i < ansLen - 1) {
+				printf("*");
+			}
+		}
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1059 ☆ 🔺 Prime Factors
+
+质因数分解
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <climits>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+using namespace std;
+typedef long long ll;
+const int maxn = 100001;
+
+bool isPrime(int n) {  
+	if (n <= 1)
+		return false;
+	int sqr = (int)sqrt(1.0 * n);
+	for (int i = 2; i <= sqr; i++) {
+		if (n % i == 0)
+			return false;
+	}
+	return true;
+}
+int prime[maxn], pNum = 0;
+void findPrime() {  // 求素数表
+	for (int i = 1; i < maxn; i++) {
+		if (isPrime(i) == true)
+			prime[pNum++] = i;
+	}
+}
+struct factor {
+	int x, cnt;  // x为质因子，cnt为其指数!!!
+}fac[10];
+
+int main() {
+	findPrime();
+	int n, num = 0;  // num为n的不同质因子的个数
+	cin >> n;
+	if (n == 1)
+		cout << "1=1";  // 特判1的情况
+	else {
+		printf("%d=", n);
+		int sqr = (int)sqrt(1.0 * n);
+		// 枚举根号n以内的质因子
+		//for (int i = 0; i < pNum && prime[i] <= sqr; i++) {  
+		for (int i = 0; prime[i] <= sqr; i++) {  
+			if (n % prime[i] == 0) {
+				fac[num].x = prime[i];
+				fac[num].cnt = 0;
+				while (n % prime[i] == 0) {   // 计算除质因子prime[i]的个数
+					fac[num].cnt++;
+					n /= prime[i];  // !!!
+				}
+				num++;
+			}
+			if (n == 1)  // 及时退出循环!!!
+				break;
+		}
+		if (n != 1) {  // 如果无法被根号n以内的质因子除尽,n就是最后一个因子!!!
+			fac[num].x = n;
+			fac[num++].cnt = 1;
+		}
+		// 按格式输出结果
+		for (int i = 0; i < num; i++) {
+			if (i > 0)
+				printf("*");
+			printf("%d", fac[i].x);
+			if (fac[i].cnt > 1) {
+				printf("^%d", fac[i].cnt);
+			}
+		}
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1090 ???
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <climits>
+#include <vector>
+#include <cstring>
+#include <string>
+#include <cmath>
+#include <algorithm>
+using namespace std;
+const int maxn = 100001;
+vector<int> child[maxn];  // 存放树
+double p, r;
+// maxDepth 为最大深度，num为最大深度的叶节点个数
+int n, maxDepth = 0, num = 0;
+void DFS(int index, int depth) {
+	if (child[index].size() == 0) {  // 到达叶节点
+		if (depth > maxDepth) {
+			maxDepth = depth;
+			num = 1;
+		}
+		else if (depth == maxDepth) {
+			num++;
+		}
+		return;
+	}
+	for (int i = 0; i < child[index].size(); i++) {
+		DFS(child[index][i], depth + 1);
+	}
+}
+int main() {
+	int father, root;
+	cin >> n >> p >> r;
+	r /= 100;  // 将百分数除以100
+	for (int i = 0; i < n; i++) {
+		cin >> father;
+		if (father != -1) {
+			child[father].push_back(i);
+		}
+		else {
+			root = i;
+		}
+	}
+	DFS(root, 0);  // DFS入口
+	printf("%.2f %d\n", p * pow(1 + r, maxDepth), num);
+	system("pause");
+	return 0;
+}
+```
+
+
+
+## 1079 ???
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <climits>
+#include <vector>
+#include <cstring>
+#include <string>
+#include <cmath>
+#include <algorithm>
+using namespace std;
+const int maxn = 100001;
+struct node {
+	double data;  // 数据域
+	vector<int> child;  // 指针域
+}Node[maxn];  // 存放树
+int n;
+double p, r, ans = 0;  // ans为叶节点货物的价格之和
+
+void DFS(int index, int depth) {
+	if (Node[index].child.size() == 0) {  // 到达叶节点
+		ans += Node[index].data * pow(1 + r, depth);  // 累加叶节点货物的价格
+		return;
+	}
+	for (int i = 0; i < Node[index].child.size(); i++) {
+		DFS(Node[index].child[i], depth + 1);  // 递归访问子节点
+	}
+}
+int main() {
+	int k, child;
+	cin >> n >> p >> r;
+	r /= 100;  // 将百分数除以100
+	for (int i = 0; i < n; i++) {
+		cin >> k;
+		if (k != 0) {
+			for (int j = 0; j < k; j++) {
+				cin >> child;
+				Node[i].child.push_back(child);
+			}
+		}
+		else {
+			cin >> Node[i].data;
+		}
+	}
+	DFS(0, 0);  // DFS入口
+	printf("%.1f\n", p * ans);
+	system("pause");
+	return 0;
+}
+```
+
+## 1074 ☆ 🔺 Reversing Linked List 
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <climits>
+#include <vector>
+#include <cstring>
+#include <string>
+#include <cmath>
+#include <algorithm>
+using namespace std;
+const int maxn = 100001;
+struct Node {
+	int address, data, next;
+	int order;  // 结点在链表上的序号，无效结点记为maxn
+}node[maxn];
+
+bool cmp(Node a, Node b) {
+	return a.order < b.order;
+}
+
+int main() {
+	for (int i = 0; i < maxn; i++) {
+		node[i].order = maxn;  
+	}
+	int begin, n, k, address;
+	cin >> begin >> n >> k;
+	for (int i = 0; i < n; i++) {
+		cin >> address;
+		cin >> node[address].data >> node[address].next;
+		node[address].address = address;
+	}
+	int p = begin, count = 0;
+	while (p != -1) {
+		node[p].order = count++;
+		p = node[p].next;
+	}
+	sort(node, node + maxn, cmp);
+	n = count;
+	for (int i = 0; i < n / k; i++) {
+		for (int j = (i + 1) * k - 1; j > i * k; j--) {
+			printf("%05d %d %05d\n", node[j].address, node[j].data, node[j - 1].address);
+		}
+		printf("%05d %d ", node[i * k].address, node[i *k].data);
+		if (i < n / k - 1) {
+			printf("%05d\n", node[(i + 2) * k - 1].address);
+		}
+		else {
+			if (n % k == 0)
+				printf("-1\n");
+			else {
+				printf("%05d\n", node[(i + 1) * k].address);
+				for (int i = n / k * k; i < n; i++) {
+					printf("%05d %d ", node[i].address, node[i].data);
+					if (i < n - 1) {
+						printf("%05d\n", node[i + 1].address);
+					}
+					else {
+						printf("-1\n");
+					}
+				}
+			}
+		}
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1097 ☆ 🔺 Deduplication on a Linked List
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <climits>
+#include <vector>
+#include <cstring>
+#include <string>
+#include <cmath>
+#include <algorithm>
+using namespace std;
+const int maxn = 100001;
+const int tableNum = 1000001;
+struct Node {
+	int address, data, next;
+	int order;  // 结点在链表上的序号，无效结点记为maxn
+}node[maxn];
+
+bool cmp(Node a, Node b) {
+	return a.order < b.order;
+}
+
+bool isExist[tableNum] = { false };
+
+int main() {
+	memset(isExist, false, sizeof(isExist));
+	for (int i = 0; i < maxn; i++) {
+		node[i].order = maxn * 2;
+	}
+	int n, begin, address;
+	cin >> begin >> n;
+	for (int i = 0; i < n; i++) {
+		cin >> address;
+		cin >> node[address].data >> node[address].next;
+		node[address].address = address;
+	}
+	int countValid = 0, countRemoved = 0, p = begin;
+	while (p != -1) {
+		if (!isExist[abs(node[p].data)]) {
+			isExist[abs(node[p].data)] = true;
+			node[p].order = countValid++;
+		}
+		else {
+			node[p].order = maxn + countRemoved++;
+		}
+		p = node[p].next;
+	}
+	sort(node, node + maxn, cmp);
+	int count = countValid + countRemoved;
+	for (int i = 0; i < count; i++) {
+		if (i != countValid - 1 && i != count - 1) {
+			printf("%05d %d %05d\n", node[i].address, node[i].data, node[i + 1].address);
+		}
+		else {
+			printf("%05d %d -1\n", node[i].address, node[i].data);
+		}
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1103 ☆ 🔺 Integer Factorization
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <climits>
+#include <vector>
+#include <cstring>
+#include <string>
+#include <cmath>
+#include <algorithm>
+using namespace std;
+int n, k, p, maxFacSum = -1;
+vector<int> fac, ans, temp;
+
+int power(int x) {
+	int ans = 1;
+	for (int i = 0; i < p; i++) {
+		ans *= x;
+	}
+	return ans;
+}
+
+void initFac() {
+	int i = 0, temp = 0;
+	while (temp <= n) {
+		fac.push_back(temp);
+		temp = power(++i);
+	}
+}
+
+void DFS(int index, int nowK, int sum, int facSum) {
+	if (sum == n && nowK == k) {
+		if (facSum > maxFacSum) {
+			ans = temp;
+			maxFacSum = facSum;
+		}
+		return;
+	}
+	if (sum > n || nowK > k) return;
+	if (index - 1 >= 0) {
+		temp.push_back(index);
+		DFS(index, nowK + 1, sum + fac[index], facSum + index);
+		temp.pop_back();
+		DFS(index - 1, nowK, sum, facSum);
+	}
+}
+
+int main() {
+	cin >> n >> k >> p;
+	initFac();
+	DFS(fac.size() - 1, 0, 0, 0);
+	if (maxFacSum == -1)
+		cout << "Impossible" << endl;
+	else {
+		printf("%d = %d^%d", n, ans[0], p);
+		for (int i = 1; i < ans.size(); i++) {
+			printf(" + %d^%d", ans[i], p);
+		}
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## ☆  🔺 1091 Acute Stroke
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <climits>
+#include <vector>
+#include <queue>
+using namespace std;
+struct node {
+	int x, y, z;
+}Node;
+
+int n, m, slice, T;
+int pixel[1290][130][61];
+bool inq[1290][130][61] = { false };
+int X[6] = { 0, 0, 0, 0, 1, -1 };
+int Y[6] = { 0, 0, 1, -1, 0, 0 };
+int Z[6] = { 1, -1, 0, 0, 0, 0 };
+
+bool judge(int x, int y, int z) {
+	if (x >= n || x < 0 || y >= m || y < 0 || z >= slice | z < 0)
+		return false;
+	if (pixel[x][y][z] == 0 || inq[x][y][z] == true)
+		return false;
+	return true;
+}
+
+int BFS(int x, int y, int z) {
+	int tot = 0;
+	queue<node> Q;
+	Node.x = x, Node.y = y, Node.z = z;
+	Q.push(Node);
+	inq[x][y][z] = true;
+	while (!Q.empty()) {
+		node top = Q.front();
+		Q.pop();
+		tot++;
+		for (int i = 0; i < 6; i++) {
+			int newX = top.x + X[i];
+			int newY = top.y + Y[i];
+			int newZ = top.z + Z[i];
+			if (judge(newX, newY, newZ)) {
+				Node.x = newX, Node.y = newY, Node.z = newZ;
+				Q.push(Node);
+				inq[newX][newY][newZ] = true;
+			}
+		}
+	}
+	if (tot >= T)
+		return tot;
+	else
+		return 0;
+}
+int main() {
+	cin >> n >> m >> slice >> T;
+	for (int z = 0; z < slice; z++) {
+		for (int x = 0; x < n; x++) {
+			for (int y = 0; y < m; y++) {
+				cin >> pixel[x][y][z];
+			}
+		}
+	}
+	int ans = 0;
+	for (int z = 0; z < slice; z++) {
+		for (int x = 0; x < n; x++) {
+			for (int y = 0; y < m; y++) {
+				if (pixel[x][y][z] == 1 && inq[x][y][z] == false) {
+					ans += BFS(x, y, z);
+				}
+			}
+		}
+	}
+	printf("%d\n", ans);
+	system("pause");
+	return 0;
+}
+```
+
+## 1020 ☆ 🔺 Tree Traversals
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <algorithm>
+#include <queue>
+using namespace std;
+const int maxn = 50;
+
+struct node {
+	int data;
+	node* lchild;
+	node* rchild;
+};
+int pre[maxn], in[maxn], post[maxn];
+int n;
+
+node* create(int postL, int postR, int inL, int inR) {
+	if (postL > postR) {
+		return NULL;
+	}
+	node* root = new node;
+	root->data = post[postR];
+	int k;
+	for (k = inL; k <= inR; k++) {
+		if (in[k] == post[postR]) {
+			break;
+		}
+	}
+	int numLeft = k - inL;
+	root->lchild = create(postL, postL + numLeft - 1, inL, k - 1);
+	root->rchild = create(postL + numLeft, postR - 1, k + 1, inR);
+	return root;
+}
+
+int num = 0;
+void BFS(node* root) {
+	queue<node*> q;
+	q.push(root);
+	while (!q.empty()) {
+		node* now = q.front();
+		q.pop();
+		cout << now->data;
+		num++;
+		if (num < n)
+			cout << " ";
+		if (now->lchild != NULL)
+			q.push(now->lchild);
+		if (now->rchild != NULL)
+			q.push(now->rchild);
+	}
+}
+
+int main() {
+	cin >> n;
+	for (int i = 0; i < n; i++) {
+		cin >> post[i];
+	}
+	for (int i = 0; i < n; i++) {
+		cin >> in[i];
+	}
+	node* root = create(0, n - 1, 0, n - 1);
+	BFS(root);
+	system("pause");
+	return 0;
+}
+```
+
+## ☆ 🔺1086 Tree Traversals Again 
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <string>
+#include <algorithm>
+#include <queue>
+#include <stack>
+using namespace std;
+const int maxn = 50;
+
+struct node {
+	int data;
+	node* lchild;
+	node* rchild;
+};
+int pre[maxn], in[maxn], post[maxn];
+int n;
+
+node* create(int preL, int preR, int inL, int inR) {
+	if (preL > preR) {
+		return NULL;
+	}
+	node* root = new node;
+	root->data = pre[preL];
+	int k;
+	for (k = inL; k <= inR; k++) {
+		if (in[k] == pre[preL]) {
+			break;
+		}
+	}
+	int numLeft = k - inL;
+	root->lchild = create(preL + 1, preL + numLeft, inL, k - 1);
+	root->rchild = create(preL + numLeft + 1, preR, k + 1, inR);
+	return root;
+}
+
+int num = 0;
+void postorder(node* root) {
+	if (root == NULL) {
+		return;
+	}
+	postorder(root->lchild);
+	postorder(root->rchild);
+	cout << root->data;
+	num++;
+	if (num < n)
+		cout << " ";
+}
+
+int main() {
+	cin >> n;
+	string str;
+	stack<int> st;
+	int x, preIndex = 0, inIndex = 0;
+	for (int i = 0; i < 2 * n; i++) {
+		cin >> str;
+		if (str == "Push") {
+			cin >> x;
+			pre[preIndex++] = x;
+			st.push(x);
+		}
+		else {
+			in[inIndex++] = st.top();
+			st.pop();
+		}
+	}
+	node* root = create(0, n - 1, 0, n - 1);
+	postorder(root);
+	system("pause");
+	return 0;
+}
+```
+
+## 1102 ☆ 🔺 Invert a Binary Tree
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <string>
+#include <algorithm>
+#include <queue>
+#include <stack>
+using namespace std;
+const int maxn = 110;
+
+struct node {
+	int lchild;
+	int rchild;
+}Node[maxn];
+bool notRoot[maxn] = { false };
+int n, num = 0;
+
+void print(int id) {
+	cout << id;
+	num++;
+	if (num < n)
+		cout << " ";
+	else
+		cout << endl;
+}
+
+void inOrder(int root) {
+	if (root == -1)
+		return;
+	inOrder(Node[root].lchild);
+	print(root);
+	inOrder(Node[root].rchild);
+}
+
+void BFS(int root) {
+	queue<int> q;
+	q.push(root);
+	while (!q.empty()) {
+		int now = q.front();
+		q.pop();
+		print(now);
+		if (Node[now].lchild != -1)
+			q.push(Node[now].lchild);
+		if (Node[now].rchild != -1)
+			q.push(Node[now].rchild);
+	}
+}
+
+void postOrder(int root) {
+	if (root == -1)
+		return;
+	postOrder(Node[root].lchild);
+	postOrder(Node[root].rchild);
+	swap(Node[root].lchild, Node[root].rchild);
+}
+
+int strToNum(char c) {
+	if (c == '-')
+		return -1;
+	else {
+		notRoot[c - '0'] = true;
+		return c - '0';
+	}
+}
+
+int findRoot() {
+	for (int i = 0; i < n; i++) {
+		if (notRoot[i] == false) {
+			return i;
+		}
+	}
+}
+
+int main() {
+	char lchild, rchild;
+	cin >> n;
+	for (int i = 0; i < n; i++) {
+		getchar();
+		cin >> lchild >> rchild;
+		Node[i].lchild = strToNum(lchild);
+		Node[i].rchild = strToNum(rchild);
+	}
+	int root = findRoot();
+	postOrder(root);
+	BFS(root);
+	num = 0;
+	inOrder(root);
+	system("pause");
+	return 0;
+} 
 ```
 

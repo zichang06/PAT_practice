@@ -2,11 +2,11 @@
 
 ## 略的题目
 
-06、21、31、02、48、
+1006、1021、1031、1002、1048、
 
-15、38、33、43、47、
+1015、1038、1033、1043、1047、
 
-
+1041、1004、1010、1018
 
 ## 1022 D进制的A+B 
 ```c++
@@ -1311,5 +1311,316 @@ int main() {
 	system("pause");
 	return 0;
 }
+```
+
+## 1007 ☆ 素数对猜想
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <climits>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+
+bool isPrime(int n) {  // 判断n是否为素数!!!
+	if (n <= 1)
+		return false;
+	int sqr = (int)sqrt(1.0 * n);
+	for (int i = 2; i <= sqr; i++) {
+		if (n % i == 0) 
+			return false;
+	}
+	return true;
+}
+int main() {
+	int n, count = 0;
+	cin >> n;
+	for (int i = 3; i + 2 <= n; i += 2) {
+		if (isPrime(i) && isPrime(i + 2)) {
+			count++;
+		}
+	}
+	cout << count << endl;
+	system("pause");
+	return 0;
+}
+```
+
+## 1013 ☆ 数素数
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <climits>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+const int maxn = 1000001;
+bool p[maxn] = { 0 };
+int prime[maxn], num = 0;
+
+// 筛法!!!
+void find_prime(int n) {  // 求素数表
+	for (int i = 2; i < maxn; i++) {
+		if (p[i] == false) {
+			prime[num++] = i;
+			if (num >= n)  // 只需要n个素数
+				break;
+			for (int j = i + i; j < maxn; j += i) {
+				p[j] = true;  // 该素数的整数倍都置为非素数!!!
+			}
+		}
+	}
+}
+
+int main() {
+	int m, n, count = 0;
+	cin >> m >> n;
+	find_prime(n);
+	for (int i = m; i <= n; i++) {
+		cout << prime[i - 1];
+		count++;
+		if (count % 10 != 0 && i < n)
+			cout << " ";
+		else
+			cout << endl;
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1017 ☆ 🔺 ??? A 除以B
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <climits>
+#include <vector>
+#include <cstring>
+#include <string>
+#include <cmath>
+#include <algorithm>
+using namespace std;
+typedef long long ll;
+
+struct bign {  // 大N
+	int d[1001];
+	int len;
+	bign() {
+		memset(d, 0, sizeof(d));  // string.h
+		len = 0;
+	}
+};
+
+bign change(string str) {  // 将整数转换为bign!!!
+	bign a;
+	a.len = str.length();
+	for (int i = 0; i < a.len; i++) {
+		a.d[i] = str[a.len - i - 1] - '0';
+	}
+	return a;
+}
+
+bign divide(bign a, int b, int& r) {  // 高精度除法，r为余数!!!
+	bign c;
+	c.len = a.len; // 被除数的每一位和商的每一位是一一对应的，因此先令长度相等
+	for (int i = a.len - 1; i >= 0; i--) {
+		r = r * 10 + a.d[i];  // 和上一位遗留的余数组合
+		if (r < b)
+			c.d[i] = 0;  // 不够除，该位为0
+		else {  // 够除
+			c.d[i] = r / b; // 商
+			r = r % b;  // 获得新的余数
+		}
+	}
+	while (c.len - 1 >= 1 && c.d[c.len - 1] == 0) {
+		c.len--;  // 去除高位的0，同时至少保留一位最低位
+	}
+	return c;
+}
+
+void print(bign a) {  // 输出bign
+	for (int i = a.len - 1; i >= 0; i--) {
+		cout << a.d[i];
+	}
+}
+
+int main() {
+	string str1, str2;
+	int b, r = 0;
+	cin >> str1 >> b;
+	bign a = change(str1);  // 将a转换为bign型
+	print(divide(a, b, r));
+	printf(" %d", r);
+	system("pause");
+	return 0;
+}
+```
+
+## 1050 螺旋矩阵
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <string>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+const int maxn = 10001;
+int matrix[10001][1001], a[maxn];
+/* WC!!!更改数组size还会影响运行时间的，原来maxn*maxn会超时
+*/
+
+bool cmp(int a, int b) {
+	return a > b;
+}
+
+int main() {
+	int N;
+	cin >> N;
+	for (int i = 0; i < N; i++) {
+		cin >> a[i];
+	}
+	if (N == 1) {
+		cout << a[0];
+		system("pause");
+		return 0;
+	}
+	sort(a, a + N, cmp);
+	int m = (int)ceil(sqrt(1.0*N));
+	while (N % m != 0) {
+		m++;
+	}
+	int n = N / m, i = 1, j = 1, now = 0;
+	int U = 1, D = m, L = 1, R = n;
+	while (now < N)
+	{
+		while (now < N && j < R) {
+			matrix[i][j] = a[now++];
+			j++;
+		}
+		while (now < N && i < D) {
+			matrix[i][j] = a[now++];
+			i++;
+		}
+		while (now < N && j > L) {
+			matrix[i][j] = a[now++];
+			j--;
+		}
+		while (now < N && i > U) {
+			matrix[i][j] = a[now++];
+			i--;
+		}
+		U++, D--, L++, R--;
+		i++, j++;
+		if (now == N - 1) {
+			matrix[i][j] = a[now++];
+		}
+	}
+	for (int i = 1; i <= m; i++) {
+		for (int j = 1; j <= n; j++) {
+			cout << matrix[i][j];
+			if (j < n)
+				cout << " ";
+			else
+				cout << endl;
+		}
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1051 复数乘法
+
+注意为零时的处理
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <string>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+// !!!
+// 如果A的绝对值小于0.01，A = 0。
+// 如果B的绝对值小于0.01，B = 0。
+int main() {
+	// 复数乘法：!!! (a + bi)(c + di) = (ac－bd)+(bc + ad)i
+	double r1, p1, r2, p2;
+	double a, b, c, d, e, f;
+	cin >> r1 >> p1 >> r2 >> p2;
+	a = r1 * cos(p1);
+	b = r1 * sin(p1);
+	c = r2 * cos(p2);
+	d = r2 * sin(p2);
+	e = a * c - b * d;
+	f = b * c + a * d;
+	if (abs(e - 0) < 0.01)
+		e = 0;
+	if (abs(f - 0) < 0.01)
+		f = 0;
+	printf("%.2f", e);
+	//if (b != 0)
+	if (f >= 0)
+		printf("+");
+	printf("%.2fi", f);
+	system("pause");
+	return 0;
+}
+```
+
+## 1052 🔺 卖个萌
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+
+int main() {
+	vector<string> v[4];
+	for (int i = 0; i < 3; i++) {
+		string s;
+		getline(cin, s);
+		for (int j = 0; j < s.length(); j++) {  // !!!
+			if (s[j] == '[') {
+				for (int k = 0; j + k < s.length(); k++) {
+					if (s[j + k] == ']') {
+						v[i].push_back(s.substr(j + 1, k - 1));
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	int n;
+	cin >> n;
+	for (int i = 0; i < n; i++) {
+		int a1, b1, c, b2, a2;
+		scanf("%d %d %d %d %d", &a1, &b1, &c, &b2, &a2);
+		if (a1 > v[0].size() || b1 > v[1].size() || c > v[2].size() || a2 > v[0].size() || b2 > v[1].size() || a1 < 1 || a2 < 1 || b1 < 1 || b2 < 1 || c < 1)
+			printf("Are you kidding me? @\\/@\n");
+		else
+			cout << v[0][a1 - 1] << '(' << v[1][b1 - 1] << v[2][c - 1] << v[1][b2 - 1] << ')' << v[0][a2 - 1] << '\n';
+	}
+	return 0;
+}
+
 ```
 
