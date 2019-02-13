@@ -1624,3 +1624,505 @@ int main() {
 
 ```
 
+## 1053 住房空置率
+
+```c++
+#include <iostream>
+#include <iomanip>
+using namespace std;
+double v[1001][100];
+
+int main() {
+	int n, d;
+	double e;
+	double poss, must;
+	cin >> n >> e >> d;
+	//住房套数 低电量阈值 观察期阈值 
+	for (int i = 0; i < n; i++) {
+		cin >> v[i][0];
+		for (int j = 1; j <= v[i][0]; j++) {
+			cin >> v[i][j];
+		}
+	}
+	int tian = 0;
+	int count = 0;
+	poss = 0; must = 0;
+	for (int i = 0; i < n; i++) {
+		count = 0;
+		tian = v[i][0] / 2;
+		for (int j = 1; j <= v[i][0]; j++) {
+			if (v[i][j] < e)
+				count++;
+		}
+		if (tian < count && v[i][0] > d)//观察期大于观察期阈值 低电量天数大于观察期一半 
+			must++;//空置 
+		else if (count > tian)
+			poss++;
+	}
+
+	poss = poss / (double)n * 100.0;  //!!!
+	must = must / (double)n * 100.0;
+	cout << fixed << setprecision(1) << poss << '%' << " " << must << '%' << endl; //!!!保留小数点1位
+	return 0;
+}
+```
+
+## 1053 住房空置率
+
+??? case3 WA???
+
+```c++
+#include <iostream>
+#include <iomanip>
+#include <cmath>
+using namespace std;
+double v[1001][100];
+
+int main() {
+	int n, d;
+	double e;
+	double poss, must;
+	cin >> n >> e >> d;
+	//住房套数 低电量阈值 观察期阈值 
+	for (int i = 0; i < n; i++) {
+		cin >> v[i][0];
+		for (int j = 1; j <= v[i][0]; j++) {
+			cin >> v[i][j];
+		}
+	}
+	int tian = 0;
+	int count = 0;
+	poss = 0; must = 0;
+	for (int i = 0; i < n; i++) {
+		count = 0;
+		//tian = ceil(v[i][0] / 2);
+		tian = floor(v[i][0] / 2);
+		for (int j = 1; j <= v[i][0]; j++) {
+			if (v[i][j] < e)
+				count++;
+		}
+		if (count > tian && v[i][0] > d)//观察期大于观察期阈值 低电量天数大于观察期一半 
+			must++;//空置 
+		else if (count > tian)
+			poss++;
+	}
+
+	poss = poss / (double)n * 100.0;  //!!!
+	must = must / (double)n * 100.0;
+	cout << fixed << setprecision(1) << poss << '%' << " " << must << '%' << endl; //!!!保留小数点1位
+
+	system("pause");
+	return 0;
+}
+
+```
+
+## 1054 ☆ 🔺 求平均值
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
+#include<cstdio>
+#include<string.h>
+using namespace std;
+
+int main() {
+	int n, cnt = 0;
+	char a[50], b[50];
+	double temp, sum = 0.0;
+	cin >> n;
+	for (int i = 0; i < n; i++) {
+		scanf("%s", a);
+		sscanf(a, "%lf", &temp);  //  从一个字符串中读进与指定格式相符的数据,否则无法读入 !!!
+		sprintf(b, "%.2lf", temp);
+		int flag = 0;
+		for (int j = 0; j < strlen(a); j++) {  // 如果真是小数，sscanf前后前几位一定相同
+			if (a[j] != b[j]) flag = 1;  // 否则不相同
+		}
+		if (flag || temp < -1000 || temp > 1000) {  // 判断是否是小数且大小符合要求
+			printf("ERROR: %s is not a legal number\n", a);
+			continue;
+		}
+		else {
+			sum += temp;
+			cnt++;
+		}
+	}
+	if (cnt == 1) {
+		printf("The average of 1 number is %.2lf", sum);
+	}
+	else if (cnt > 1) {
+		printf("The average of %d numbers is %.2lf", cnt, sum / cnt);
+	}
+	else {
+		printf("The average of 0 numbers is Undefined");
+	}
+}
+```
+
+## 1055 ??? 集体照
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
+#include<cstdio>
+#include<string>
+#include<cmath>
+#include<algorithm>
+using namespace std;
+
+struct person {
+	string name;
+	int height;
+};
+
+person people[10001];
+int matrix[11][1001];
+
+bool cmp1(person a, person b){
+	return a.height < b.height;  // 从小到大排序
+}
+bool cmp2(person a, person b) {
+	return a.height > b.height;  // 从大到小排序
+}
+
+int main() {
+	int n, k;
+	cin >> n >> k;
+	int rowNum = floor(n / k);
+	int lastRowNum = n - rowNum * (k - 1);	
+	for (int i = 0; i < n; i++) {
+		cin >> people[i].name >> people[i].height;
+	}
+	stable_sort(people, people + n, cmp1);  // !!!稳定排序
+	int i;
+	for (i = 0; i < k - 1; i++) {
+		sort(people + i * rowNum, people + (i + 1) * rowNum, cmp2);
+	}
+	stable_sort(people + (k - 1) * rowNum , people + n, cmp2);
+	for (i = 0; i < k - 1; i++) {
+		int offset = i * rowNum;
+		int pos = floor(rowNum / 2) + 1;
+		bool flag = true;
+		for (int j = 0; j < rowNum; j++) {
+			if (flag) {
+				flag = false;
+				pos -= j;
+			}
+			else {
+				flag = true;
+				pos += j;
+			}
+			matrix[i][pos] = j + offset;	
+		}
+	}
+	int offset = i * rowNum;
+	int pos = floor(lastRowNum / 2) + 1;
+	bool flag = true;
+	for (int j = 0; j < lastRowNum; j++) {
+		if (flag) {
+			flag = false;
+			pos -= j;
+		}
+		else {
+			flag = true;
+			pos += j;
+		}
+		matrix[i][pos] = j + offset;
+	}
+	for (int j = 1; j <= lastRowNum; j++) {
+		cout << people[matrix[k - 1][j]].name;
+		if (j != lastRowNum)
+			cout << " ";
+		else
+			cout << endl;
+	}
+	for (int i = k - 2; i >= 0; i--) {
+		for (int j = 1; j <= rowNum; j++) {
+			cout << people[matrix[i][j]].name;
+			if (j != rowNum)
+				cout << " ";
+			else
+				cout << endl;
+		}
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1056 组合数的和 ☆
+
+```c++
+#include <stdio.h>
+int main()
+{
+	int a[10], n, i, j, sum = 0;
+	scanf("%d", &n);
+	for (i = 0; i < n; i++)
+		scanf("%d", &a[i]);
+	for (i = 0; i < n; i++)  // 就是两两逐一配对
+	{
+		for (j = 0; j < n; j++)
+		{
+			if (j != i)
+				sum += a[i] * 10 + a[j];
+		}
+	}
+	printf("%d", sum);
+}
+
+```
+
+## ##1057 数零一
+
+```c++
+#include<iostream>
+#include<string>
+using namespace std;
+int main()
+{
+	string s;//字符串数组
+	getline(cin, s);
+	int i,sum=0;
+	for (i = 0; i < s.length(); i++)
+	{
+		if (s[i] >= 65 && s[i] <= 90)//算出大写字母的序号并加到和里去
+			sum += s[i] - 64;
+		if (s[i] >= 97 && s[i] <= 122)//算出小写字母的序号并加到和里去
+			sum += s[i] - 96;
+	}
+	int result[2] = { 0 };//result[0]表示0的个数，result[1]表示1的个数
+	while (sum)//利用除二取余法来统计出0,1的数量
+	{
+		result[sum % 2]++;  // !!!
+		sum /= 2;
+	}
+	cout << result[0] << " " << result[1];
+}
+
+```
+
+## 1061 判断题
+
+```c++
+#include <iostream>
+#include <vector>
+using namespace std;
+int sum[101] = { 0 };
+
+int main()
+{
+	int N = 0, M = 0;
+	cin >> N >> M;
+	vector <int> a(M);
+	vector <int> b(M);
+	vector <int> c(M);
+	for (int i = 0; i < M; i++)
+		cin >> a[i];
+	for (int j = 0; j < M; j++)
+		cin >> b[j];
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			cin >> c[j];
+			if (c[j] != b[j])
+				continue;
+			else
+				sum[i] += a[j];
+		}
+	}
+	for (int j = 0; j < N; j++)
+		cout << sum[j] << endl;
+	return 0;
+}
+
+```
+
+## 1066 图像过滤
+
+```c++
+#include <stdio.h>
+
+int main()
+{
+    int N, M, A, B, C, D;
+
+    scanf("%d %d %d %d %d", &M, &N, &A, &B, &C);
+
+    for(int i = 0; i < M; i++)
+        for(int j = 0; j < N; j++)
+        {
+            scanf("%d", &D);
+            if(A <= D && D <= B)    D = C;
+            printf("%03d%c", D, j == N - 1 ? '\n' : ' '); // !!!
+        }
+
+    return 0;
+}
+```
+
+## 1071 小赌怡情
+
+```c++
+#include<iostream>
+using namespace std;
+
+int main() {
+	int t1, k1, n1, b, t, n2, i, total = 0;
+	cin >> t1 >> k1;
+	total = t1;
+	for (i = 0; i < k1; i++) {
+		cin >> n1 >> b >> t >> n2;
+		if (t > total)
+			cout << "Not enough tokens.  Total = " << total << "." << endl;
+		else if ((n1 > n2 && b == 0) || (n1 < n2 && b == 1)) {
+			total += t;
+			cout << "Win " << t << "!  Total = " << total << "." << endl;
+		}
+		else if ((n1 > n2 && b == 1) || (n1 < n2 && b == 0)) {
+			total -= t;
+			cout << "Lose " << t << ".  Total = " << total << "." << endl;
+		}
+		if (total == 0) {
+			cout << "Game Over.";
+			break;
+		}
+	}
+	return 0;
+}
+
+```
+
+## 1076 wifi密码
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
+#include <cstdio>
+int main() {
+	int n;
+	scanf("%d", &n);
+	getchar();  // 吸收换行!!!
+	for (int i = 0; i < n; i++) {
+		char a, b;
+		for (int j = 0; j < 4; j++) {
+			scanf("%c-%c", &a, &b); 
+			getchar();  // 吸收空格!!!
+			if (a == 'A'&&b == 'T') printf("1");
+			else if (a == 'B'&&b == 'T') printf("2");
+			else if (a == 'C'&&b == 'T') printf("3");
+			else if (a == 'D'&&b == 'T') printf("4");
+		}
+	}
+	system("pause");
+	return 0;
+}
+
+```
+
+## 1081 检查密码
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
+#include <cstdio>
+#include<string>
+using namespace std;
+
+int main() {
+	int N;
+	cin >> N;
+	getchar();
+	string password;
+	while (N--)
+	{
+		getline(cin, password);
+		int len = password.length();
+		if (len < 6) {
+			printf("Your password is tai duan le.\n"); 
+			continue;
+		}
+		else {
+			int flag = 1; int num = 0; int letter = 0; int success = 0;
+			for (int i = 0; password[i] != '\0'; i++)
+			{
+				if (password[i] >= '0'&&password[i] <= '9') num = 1;
+				else if ((password[i] >= 'A'&&password[i] <= 'Z') || (password[i] >= 'a'&&password[i] <= 'z'))letter = 1;
+				else if (password[i] != '.') {
+					flag = 0;	break;
+				}
+			}
+			if (flag == 0)printf("Your password is tai luan le.\n");
+			else if (letter == 0) { printf("Your password needs zi mu.\n"); flag = 0; }
+			else if (num == 0) { printf("Your password needs shu zi.\n"); flag = 0; }
+			else if (flag == 1)printf("Your password is wan mei.\n");
+		}
+	}
+}
+
+```
+
+## 1086 就不告诉你
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
+#include <cstdio>
+#include <string.h>
+#include <algorithm>
+using namespace std;
+char str[101];
+
+int main() {
+	int a, b, c;
+	cin >> a >> b;
+	c = a * b;
+	sprintf(str, "%d", c);
+	int len = strlen(str);
+	reverse(str, str + len);
+	bool flag = true;
+	for (int i = 0; i < len; i++) {
+		if (flag && str[i] == '0')
+			continue;
+		if (flag && str[i] != '0')
+			flag = false;
+		cout << str[i];
+	}
+	system("pause");
+	return 0;
+}
+
+```
+
+## 1091 ☆ N-自守数
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cmath>
+#include <string>
+using namespace std;
+
+int main() {
+	int M, j;	
+	scanf("%d", &M);
+	for (int i = 0; i < M; i++) {
+		string s, str, sub;
+		int tmp, res, lens;	
+		cin >> s;
+		tmp = stoi(s);  // !!!string 转int
+		lens = s.length();
+		for (j = 1; j < 10; j++) {
+			str = to_string(int(j*pow(tmp, 2)));  // !!! int转string
+			sub = str.substr(str.length() - lens);  // 从这一位才开始取子串
+			if (sub == s) {
+				printf("%ld %ld\n", j, int(j*pow(tmp, 2)));
+				break;
+			}
+		}
+		if (j == 10)	printf("No\n");
+	}
+	return 0;
+}
+```
+
