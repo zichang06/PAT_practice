@@ -1977,7 +1977,7 @@ struct Fraction {  // 分数
 	ll up, down;  // 分子、分母
  };
 
-Fraction reduction(Fraction result) {  // 化简!!!
+Fraction reduction(Fraction result) {  // 最简分数!!!化简!!!
 	if (result.down < 0) {  // 分母为负数，令分子分母都变为相反数
 		result.down = -result.down;
 		result.up = -result.up;
@@ -2395,7 +2395,7 @@ int main() {
 }
 ```
 
-## 1090 ???
+## 1090 ☆ 🔺 Highest Price in Supply Chain
 
 ```c++
 #define _CRT_SECURE_NO_WARNINGS
@@ -2450,7 +2450,7 @@ int main() {
 
 
 
-## 1079 ???
+## 1079 Total Sales of Supply Chain
 
 ```c++
 #define _CRT_SECURE_NO_WARNINGS
@@ -3023,5 +3023,1172 @@ int main() {
 	system("pause");
 	return 0;
 } 
+```
+
+## 1094 ☆ The Largest Generation
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include<cstdio>
+#include<iostream>
+#include<cmath>
+#include<algorithm>
+#include<cstring>
+#include<string>
+#include<vector>
+#include<map>
+#include <set>
+using namespace std;
+const int maxn = 110;
+vector<int> Node[maxn];
+int hashTable[maxn] = { 0 };
+void DFS(int index, int level) {
+	hashTable[level]++;
+	for (int j = 0; j < Node[index].size(); j++) {
+		DFS(Node[index][j], level + 1);
+	}
+}
+
+int main() {
+	int n, m, parent, k, child;
+	cin >> n >> m;
+	for (int i = 0; i < m; i++) {
+		cin >> parent >> k;
+		for (int j = 0; j < k; j++) {
+			cin >> child;
+			Node[parent].push_back(child);
+		}
+	}
+	DFS(1, 1);
+	int maxLevel = -1, maxValue = 0;
+	for (int i = 1; i < maxn; i++) {
+		if (hashTable[i] > maxValue) {
+			maxValue = hashTable[i];
+			maxLevel = i;
+		}
+	}
+	system("pause");
+	printf("%d %d\n", maxValue, maxLevel);
+	return 0;
+}
+```
+
+## 1106 ☆Lowest Price in Suplly Chain
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include<cstdio>
+#include<iostream>
+#include<climits>
+#include<float.h>  // DBL_MAX!!!
+#include<cmath>
+#include<algorithm>
+#include<cstring>
+#include<string>
+#include<vector>
+#include<map>
+#include <set>
+using namespace std;
+const int maxn = 100001;
+const double INF = DBL_MAX;  // !!! double_max
+vector<int> Node[maxn];
+int n, num = 0;
+double p, r, ans = INF;
+
+void DFS(int index, int depth) {
+	if (Node[index].size() == 0) {
+		double price = p * pow(1 + r, depth);
+		if (price < ans) {
+			ans = price;
+			num = 1;
+		}
+		else if (price == ans) {
+			num++;
+		}
+		return;
+	}
+	for (int i = 0; i < Node[index].size(); i++) {
+		DFS(Node[index][i], depth + 1);
+	}
+}
+
+int main() {
+	int k, child;
+	cin >> n >> p >> r;
+	r /= 100;
+	for (int i = 0; i < n; i++) {
+		cin >> k;
+		if (k != 0) {
+			for (int j = 0; j < k; j++) {
+				cin >> child;
+				Node[i].push_back(child);
+			}
+		}
+	}
+	DFS(0, 0);
+	printf("%.4f %d\n", ans, num);
+	system("pause");
+	return 0;
+}
+
+```
+
+## 1004 Counting Leaves
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include<cstdio>
+#include<iostream>
+#include<climits>
+#include<cmath>
+#include<algorithm>
+#include<cstring>
+#include<string>
+#include<vector>
+#include<map>
+#include <set>
+using namespace std;
+const int maxn = 101;
+vector<int> G[maxn];
+int leaf[maxn] = { 0 };
+int max_h = 1;
+
+void DFS(int index, int h) {
+	max_h = max(h, max_h);
+	if (G[index].size() == 0) {
+		leaf[h]++;
+		return;
+	}
+	for (int i = 0; i < G[index].size(); i++) {
+		DFS(G[index][i], h + 1);
+	}
+}
+
+int main() {
+	int n, m, parent, child, k;
+	cin >> n >> m;
+	for (int i = 0; i < m; i++) {
+		cin >> parent >> k;
+		for (int j = 0; j < k; j++) {
+			cin >> child;
+			G[parent].push_back(child);
+		}
+	}
+	DFS(1, 1);
+	printf("%d", leaf[1]);
+	for (int i = 2; i <= max_h; i++) {
+		printf(" %d", leaf[i]);
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1053 ☆ 🔺 🔺 Path of Equal Weight
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include<cstdio>
+#include<iostream>
+#include<climits>
+#include<cmath>
+#include<algorithm>
+#include<cstring>
+#include<string>
+#include<vector>
+#include<map>
+#include <set>
+using namespace std;
+const int maxn = 101;
+struct node {
+	int weight;
+	vector<int> child;
+}Node[maxn];
+
+bool cmp(int a, int b) {
+	return Node[a].weight > Node[b].weight;
+}
+int n, m, S;
+int path[maxn];
+
+void DFS(int index, int numNode, int sum) {
+	if (sum > S)
+		return;
+	if (sum == S) {
+		if (Node[index].child.size() != 0)
+			return;
+		for (int i = 0; i < numNode; i++) {
+			cout << Node[path[i]].weight;
+			if (i < numNode - 1)
+				printf(" ");
+			else
+				printf("\n");
+		}
+		return;
+	}
+	for (int i = 0; i < Node[index].child.size(); i++) {
+		int child = Node[index].child[i];
+		path[numNode] = child;
+		DFS(child, numNode + 1, sum + Node[child].weight);
+	}
+}
+
+int main() {
+	cin >> n >> m >> S;
+	for (int i = 0; i < n; i++) {
+		cin >> Node[i].weight;
+	}
+	int id, k, child;
+	for (int i = 0; i < m; i++) {
+		cin >> id >> k;
+		for (int j = 0; j < k; j++) {
+			cin >> child;
+			Node[id].child.push_back(child);
+		}
+		sort(Node[id].child.begin(), Node[id].child.end(), cmp);
+	}
+	path[0] = 0;
+	DFS(0, 1, Node[0].weight);
+	system("pause");
+	return 0;
+}
+
+```
+
+## 1043 ☆ 🔺 Is it a Binary Search Tree
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include<cstdio>
+#include<iostream>
+#include<climits>
+#include<cmath>
+#include<algorithm>
+#include<cstring>
+#include<string>
+#include<vector>
+#include<map>
+#include <set>
+using namespace std;
+
+struct node {
+	int data;
+	node *left, *right;
+};
+
+void insert(node* &root, int data) {
+	if (root == NULL) {
+		root = new node;
+		root->data = data;
+		root->left = root->right = NULL;
+		return;
+	}
+	if (data < root->data)
+		insert(root->left, data);
+	else
+		insert(root->right, data);
+}
+
+void preOrder(node*root, vector<int> &vi) {
+	if (root == NULL) return;
+	vi.push_back(root->data);
+	preOrder(root->left, vi);
+	preOrder(root->right, vi);
+}
+
+void preOrderMirror(node*root, vector<int> &vi) {
+	if (root == NULL) return;
+	vi.push_back(root->data);
+	preOrderMirror(root->right, vi);
+	preOrderMirror(root->left, vi);
+}
+
+void postOrder(node* root, vector<int> &vi) {
+	if (root == NULL) return;
+	postOrder(root->left, vi);
+	postOrder(root->right, vi);
+	vi.push_back(root->data);
+}
+
+void postOrderMirror(node*root, vector<int> &vi) {
+	if (root == NULL) return;
+	postOrderMirror(root->right, vi);
+	postOrderMirror(root->left, vi);
+	vi.push_back(root->data);
+}
+vector<int> origin, pre, preM, post, postM;
+
+int main() {
+	int n, data;
+	node* root = NULL;
+	cin >> n;
+	for (int i = 0; i < n; i++) {
+		cin >> data;
+		origin.push_back(data);
+		insert(root, data);
+	}
+	preOrder(root, pre);
+	preOrderMirror(root, preM);
+	postOrder(root, post);
+	postOrderMirror(root, postM);
+	if (origin == pre) {
+		cout << "YES" << endl;
+		for (int i = 0; i < post.size(); i++) {
+			printf("%d", post[i]);
+			if (i < post.size() - 1)
+				cout << " ";
+		}
+	}
+	else if (origin == preM) {
+		cout << "YES" << endl;
+		for (int i = 0; i < postM.size(); i++) {
+			printf("%d", postM[i]);
+			if (i < postM.size() - 1)
+				cout << " ";
+		}
+	}
+	else {
+		cout << "NO" << endl;
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1064 ☆ 🔺  Complete Binary Search Tree
+
+不知道为啥，ind原来是index，总是编译错误
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include<cstdio>
+#include<iostream>
+#include<climits>
+#include<cmath>
+#include<algorithm>
+#include<cstring>
+#include<string>
+#include<vector>
+#include<map>
+#include <set>
+using namespace std;
+const int maxn = 1001;
+int n, number[maxn], CBT[maxn], ind = 0;
+
+void inorder(int root) {
+	if (root > n)
+		return;
+	inorder(root * 2);
+	CBT[root] = number[ind++];
+	inorder(root * 2 + 1);
+}
+
+int main() {
+	cin >> n;
+	for (int i = 0; i < n; i++) {
+		cin >> number[i];
+	}
+	sort(number, number + n);
+	inorder(1);
+	for (int i = 1; i <= n; i++) {
+		cout << CBT[i];
+		if (i < n)
+			cout << " ";
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1099 ☆ Build A Binary Search Tree
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include<cstdio>
+#include<iostream>
+#include<climits>
+#include<cmath>
+#include<algorithm>
+#include<cstring>
+#include<string>
+#include<vector>
+#include<queue>
+#include<map>
+#include <set>
+using namespace std;
+const int maxn = 101;
+struct node {
+	int data;
+	int lchild, rchild;
+}Node[maxn];
+
+int n, in[maxn], num = 0;
+
+void inOrder(int root) {
+	if (root == -1) {
+		return;
+	}
+	inOrder(Node[root].lchild);
+	Node[root].data = in[num++];
+	inOrder(Node[root].rchild);
+}
+
+void BFS(int root) {
+	queue<int> q;
+	q.push(root);
+	num = 0;
+	while (!q.empty()) {
+		int now = q.front();
+		q.pop();
+		cout << Node[now].data;
+		num++;
+		if (num < n)
+			cout << " ";
+		if (Node[now].lchild != -1)
+			q.push(Node[now].lchild);
+		if (Node[now].rchild != -1)
+			q.push(Node[now].rchild);
+	}
+}
+int main() {
+	int lchild, rchild;
+	cin >> n;
+	for (int i = 0; i < n; i++) {
+		cin >> lchild >> rchild;
+		Node[i].lchild = lchild;
+		Node[i].rchild = rchild;
+	}
+	for (int i = 0; i < n; i++) {
+		cin >> in[i];
+	}
+	sort(in, in + n);
+	inOrder(0);
+	BFS(0);
+	system("pause");
+	return 0;
+}
+```
+
+## 1066 ☆ ??? Root of AVL Tree
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include<cstdio>
+#include<iostream>
+#include<climits>
+#include<cmath>
+#include<algorithm>
+#include<cstring>
+#include<string>
+#include<vector>
+#include<queue>
+#include<map>
+#include <set>
+using namespace std;
+const int maxn = 101;
+struct node {
+	int v, height;
+	node *lchild, *rchild;
+}*root;
+
+node* newNode(int v) {
+	node *Node = new node;
+	Node->v = v;
+	Node->height = 1;
+	Node->lchild = Node->rchild = NULL;
+	return Node;
+}
+
+int getHeight(node* root) {
+	if (root == NULL)
+		return 0;
+	return root->height;
+}
+
+void updateHeight(node* root) {
+	root->height = max(getHeight(root->lchild), getHeight(root->rchild)) + 1;
+}
+
+int getBalanceFactor(node* root) {
+	return getHeight(root->lchild) - getHeight(root->rchild);
+}
+
+void L(node* &root) {
+	node* temp = root->rchild;
+	root->lchild = temp->lchild;
+	temp->lchild = root;
+	updateHeight(root);
+	updateHeight(temp);
+	root = temp;
+}
+
+void R(node* &root) {
+	node* temp = root->lchild;
+	root->lchild = temp->rchild;
+	temp->rchild = root;
+	updateHeight(root);
+	updateHeight(temp);
+	root = temp;
+}
+
+void insert(node* &root, int v) {
+	if (root == NULL) {
+		root = newNode(v);
+		return;
+	}
+	if (v < root->v) {
+		insert(root->lchild, v);
+		updateHeight(root);
+		if (getBalanceFactor(root) == 2) {
+			if (getBalanceFactor(root->lchild) == 1) {
+				R(root);
+			}
+			else if (getBalanceFactor(root->lchild) == -1) {
+				L(root->lchild);
+				R(root);
+			}
+		}
+		
+	}
+	else {
+		insert(root->rchild, v);
+		updateHeight(root);
+		if (getBalanceFactor(root) == -2) {
+			if (getBalanceFactor(root->rchild) == -1) {
+				L(root);
+			}
+			else if (getBalanceFactor(root->rchild) == 1) {
+				R(root->rchild);
+				L(root);
+			}
+		}
+	}
+}
+
+//node* Create(int data[], int n) {
+//	node* root = NULL;
+//	for (int i = 0; i < n; i++) {
+//		insert(root, data[i]);
+//	}
+//	return root;
+//}
+
+int main() {
+	int n, v;
+	cin >> n;
+	for (int i = 0; i < n; i++) {
+		cin >> v;
+		insert(root, v);
+	}
+	cout << root->v;
+	system("pause");
+	return 0;
+}
+
+```
+
+## 1107 ☆ 🔺 Social Clusters
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include<cstdio>
+#include<iostream>
+#include<climits>
+#include<cmath>
+#include<algorithm>
+#include<cstring>
+#include<string>
+#include<vector>
+#include<queue>
+#include<map>
+#include <set>
+using namespace std;
+const int N = 1001;
+int father[N];
+int isRoot[N] = { 0 };
+int course[N] = { 0 };
+
+int findFather(int x) {
+	int a = x;
+	while (x != father[x]) {
+		x = father[x];
+	}
+	return x;
+}
+
+void Union(int a, int b) {
+	int faA = findFather(a);
+	int faB = findFather(b);
+	if (faA != faB) {
+		father[faA] = faB;
+	}
+}
+
+void init(int n) {
+	for (int i = 1; i <= n; i++) {
+		father[i] = i;
+		isRoot[i] = false;
+	}
+}
+
+bool cmp(int a, int b) {
+	return a > b;
+}
+
+int main() {
+	int n, k, h;
+	cin >> n;
+	init(n);
+	for (int i = 1; i <= n; i++) {
+		scanf("%d:", &k);
+		for (int j = 0; j < k; j++) {
+			cin >> h;
+			if (course[h] == 0) {
+				course[h] = i;
+			}
+			Union(i, findFather(course[h]));
+		}
+	}
+	for (int i = 1; i <= n; i++) {
+		isRoot[findFather(i)]++;
+	}
+	int ans = 0;
+	for (int i = 1; i <= n; i++) {
+		if (isRoot[i] != 0) {
+			ans++;
+		}
+	}
+	cout << ans << endl;
+	sort(isRoot + 1, isRoot + n + 1, cmp);
+	for (int i = 1; i <= ans; i++) {
+		cout << isRoot[i];
+		if (i < ans)
+			cout << " ";
+	}
+	system("pause");
+	return 0;
+}
+
+```
+
+## 1098 ☆ 🔺 Insertion or Heap Sort
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include<cstdio>
+#include<iostream>
+#include<climits>
+#include<cmath>
+#include<algorithm>
+#include<cstring>
+#include<string>
+#include<vector>
+#include<queue>
+#include<map>
+#include <set>
+using namespace std;
+const int N = 101;
+int origin[N], tempOri[N], changed[N];
+int n;
+
+bool isSame(int A[], int B[]) {
+	for (int i = 1; i <= n; i++) {
+		if (A[i] != B[i])
+			return false;
+	}
+	return true;
+}
+
+void showArray(int A[]) {
+	for (int i = 1; i <= n; i++) {
+		cout << A[i];
+		if (i < n)
+			cout << " ";
+	}
+	cout << endl;
+}
+
+bool insertSort() {
+	bool flag = false;
+	for (int i = 2; i <= n; i++) {
+		if (i != 2 && isSame(tempOri, changed)) {
+			flag = true;
+		}
+		sort(tempOri, tempOri + i + 1);
+		if (flag == true) {
+			return true;
+		}
+	}
+	return flag;
+}
+
+void downAdjust(int low, int high) {
+	int i = low, j = i * 2;
+	while (j <= high) {
+		if (j + 1 <= high && tempOri[j + 1] > tempOri[j]) {
+			j = j + 1;
+		}
+		if (tempOri[j] > tempOri[i]) {
+			swap(tempOri[j], tempOri[i]);
+			i = j;
+			j = i * 2;
+		}
+		else {
+			break;
+		}
+	}
+}
+
+void heapSort() {
+	bool flag = false;
+	for (int i = n / 2; i >= 1; i--) {
+		downAdjust(i, n);
+	}
+	for (int i = n; i > 1; i--) {
+		if (i != n && isSame(tempOri, changed)) {
+			flag = true;
+		}
+		swap(tempOri[i], tempOri[1]);
+		downAdjust(1, i - 1);
+		if (flag == true) {
+			showArray(tempOri);
+			return;
+		}
+	}
+}
+
+int main() {
+	cin >> n;
+	for (int i = 1; i <= n; i++) {
+		cin >> origin[i];
+		tempOri[i] = origin[i];  // tempOri数组为备份，排序过程在tempOri上进行
+	}
+	for (int i = 1; i <= n; i++) {
+		cin >> changed[i];  // 目标数组
+	}
+	if (insertSort()) {  // 如果插入排序中找到目标数组
+		cout << "Insertion Sort" << endl;
+		showArray(tempOri);
+	}
+	else {  // 到达此处时一定是堆排序
+		cout << "Heap Sort" << endl;
+		for (int i = 1; i <= n; i++) {
+			tempOri[i] = origin[i];  //还原tempOri数组
+		}
+		heapSort();  // 归并排序
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## A1013 ☆☆ Battle over cities
+
+超时!!!用scanf!!!
+
+ ```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include<cstdio>
+#include<iostream>
+#include<climits>
+#include<cmath>
+#include<algorithm>
+#include<cstring>
+#include<string>
+#include<vector>
+#include<queue>
+#include<map>
+#include <set>
+using namespace std;
+const int N = 1001;
+vector<int> G[N];
+bool vis[N];
+
+int currentPoint;
+void dfs(int v) {
+	if (v == currentPoint)
+		return;
+	vis[v] = true;
+	for (int i = 0; i < G[v].size(); i++) {
+		if (vis[G[v][i]] == false) {
+			dfs(G[v][i]); 
+		}
+	}
+}
+
+int n, m, k;
+int main() {
+	cin >> n >> m >> k;
+	for (int i = 0; i < m; i++) {
+		int a, b;
+		scanf("%d %d", &a, &b);
+		G[a].push_back(b);
+		G[b].push_back(a);
+	}
+
+	for (int query = 0; query < k; query++) {
+		cin >> currentPoint;
+		memset(vis, false, sizeof(vis));
+		int block = 0;
+		for (int i = 1; i <= n; i++) {
+			if (i != currentPoint && vis[i] == false) {
+				dfs(i);
+				block++;
+			}
+		}
+		printf("%d\n", block - 1);
+	}
+	system("pause");
+	return 0;
+}
+ ```
+
+## 1021 ☆ 🔺 Deepest Root
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include<cstdio>
+#include<iostream>
+#include<climits>
+#include<cmath>
+#include<algorithm>
+#include<cstring>
+#include<string>
+#include<vector>
+#include<queue>
+#include<map>
+#include <set>
+using namespace std;
+const int N = 100001;
+vector<int> G[N];
+bool isRoot[N];
+int father[N];
+
+int findFather(int x) {
+	int a = x;
+	while (x != father[x]) {
+		x = father[x];
+	}
+	return x;
+}
+
+void Union(int a, int b) {
+	int faA = findFather(a);
+	int faB = findFather(b);
+	if (faA != faB) {
+		father[faA] = faB;
+	}
+}
+
+void init(int n) {
+	for (int i = 1; i <= n; i++) {
+		father[i] = i;
+	}
+}
+
+int calBlock(int n) {
+	int block = 0;
+	for (int i = 1; i <= n; i++) {
+		isRoot[findFather(i)] = true;
+	}
+	for (int i = 1; i <= n; i++) {
+		block += isRoot[i];
+	}
+	return block;
+}
+
+int maxH = 0;
+vector<int> temp, Ans;
+
+void DFS(int u, int height, int pre) {
+	if (height > maxH) {
+		temp.clear();
+		temp.push_back(u);
+		maxH = height;
+	}
+	else if (height == maxH) {
+		temp.push_back(u);
+	}
+	for (int i = 0; i < G[u].size(); i++) {
+		if (G[u][i] == pre)
+			continue;
+		DFS(G[u][i], height + 1, u);
+	}
+}
+
+int main() {
+	int a, b, n;
+	scanf("%d", &n);
+	init(n);
+	for (int i = 1; i < n; i++) {
+		scanf("%d%d", &a, &b);
+		G[a].push_back(b);
+		G[b].push_back(a);
+		Union(a, b);
+	}
+	int Block = calBlock(n);
+	if (Block != 1) {
+		printf("Error: %d components\n", Block);
+	}
+	else {
+		DFS(1, 1, -1);
+		Ans = temp;
+		DFS(Ans[0], 1, -1);
+		for (int i = 0; i < temp.size(); i++) {
+			Ans.push_back(temp[i]);
+		}
+		sort(Ans.begin(), Ans.end());
+		printf("%d\n", Ans[0]);
+		for (int i = 1; i < Ans.size(); i++) {
+			if (Ans[i] != Ans[i - 1]) {
+				printf("%d\n", Ans[i]);
+			}
+		}
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1034 ☆ 🔺 Head of Gang
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include<cstdio>
+#include<iostream>
+#include<climits>
+#include<cmath>
+#include<algorithm>
+#include<cstring>
+#include<string>
+#include<vector>
+#include<queue>
+#include<map>
+#include <set>
+using namespace std;
+const int maxn = 2001;
+map<int, string> intToString;
+map<string, int> stringToInt;
+map<string, int> Gang;
+
+int G[maxn][maxn] = { 0 }, weight[maxn] = { 0 };
+int n, k, numPerson = 0;
+bool vis[maxn] = { false };
+
+void DFS(int nowVisit, int &head, int &numMember, int &totalValue) {
+	numMember++;
+	vis[nowVisit] = true;
+	if (weight[nowVisit] > weight[head]) {
+		head = nowVisit;
+	}
+	for (int i = 0; i < numPerson; i++) {
+		if (G[nowVisit][i] > 0) {
+			totalValue += G[nowVisit][i];
+			G[nowVisit][i] = G[i][nowVisit] = 0;
+			if (vis[i] == false) {
+				DFS(i, head, numMember, totalValue);
+			}
+		}
+	}
+}
+
+void DFSTrave() {
+	for (int i = 0; i < numPerson; i++) {
+		if (vis[i] == false) {
+			int head = i, numMember = 0, totalValue = 0;
+			DFS(i, head, numMember, totalValue);
+			if (numMember > 2 && totalValue > k) {
+				Gang[intToString[head]] = numMember;
+			}
+		}
+	}
+}
+
+int change(string str) {
+	if (stringToInt.find(str) != stringToInt.end()) {
+		return stringToInt[str];
+	}
+	else {
+		stringToInt[str] = numPerson;
+		intToString[numPerson] = str;
+		return numPerson++;
+	}
+}
+int main() {
+	int w;
+	string str1, str2;
+	cin >> n >> k;
+	for (int i = 0; i < n; i++) {
+		cin >> str1 >> str2 >> w;
+		int id1 = change(str1);
+		int id2 = change(str2);
+		weight[id1] += w;
+		weight[id2] += w;
+		G[id1][id2] += w;
+		G[id2][id1] += w;
+	}
+	DFSTrave();
+	cout << Gang.size() << endl;
+	map<string, int>::iterator it;
+	for (it = Gang.begin(); it != Gang.end(); it++) {
+		cout << it->first << " " << it->second << endl;
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1076 ☆ Forwards on Weibo
+
+```C++
+#define _CRT_SECURE_NO_WARNINGS
+#include<cstdio>
+#include<iostream>
+#include<climits>
+#include<cmath>
+#include<algorithm>
+#include<cstring>
+#include<string>
+#include<vector>
+#include<queue>
+#include<map>
+#include <set>
+using namespace std;
+const int maxv = 1001;
+
+struct Node {
+	int id;
+	int layer;
+};
+vector<Node> Adj[maxv];
+bool inq[maxv] = { false };
+
+int BFS(int s, int L) {
+	int numForward = 0;
+	queue<Node> q;
+	Node start;
+	start.id = s;
+	start.layer = 0;
+	q.push(start);
+	inq[start.id] = true;
+	while (!q.empty()) {
+		Node topNode = q.front();
+		q.pop();
+		int u = topNode.id;
+		for (int i = 0; i < Adj[u].size(); i++) {
+			Node next = Adj[u][i];
+			next.layer = topNode.layer + 1;
+			if (inq[next.id] == false && next.layer <= L) {
+				q.push(next);
+				inq[next.id] = true;
+				numForward++;
+			}
+		}
+	}
+	return numForward;
+}
+
+int main() {
+	Node user;
+	int n, L, numFollow, idFollow;
+	scanf("%d%d", &n, &L);
+	for (int i = 1; i <= n; i++) {
+		user.id = i;
+		scanf("%d", &numFollow);
+		for (int j = 0; j < numFollow; j++) {
+			scanf("%d", &idFollow);
+			Adj[idFollow].push_back(user);
+		}
+	}
+	int numQuery, s;
+	scanf("%d", &numQuery);
+	for (int i = 0; i < numQuery; i++) {
+		memset(inq, false, sizeof(inq));
+		scanf("%d", &s);
+		int numForward = BFS(s, L);
+		printf("%d\n", numForward);
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1003 ☆ 🔺 Emergency
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include<cstdio>
+#include<iostream>
+#include<climits>
+#include<cmath>
+#include<algorithm>
+#include<cstring>
+#include<string>
+#include<vector>
+#include<queue>
+#include<map>
+#include <set>
+using namespace std;
+const int maxv = 501;
+
+int n, m, st, ed, G[maxv][maxv], weight[maxv];
+int d[maxv], w[maxv], num[maxv];
+
+bool vis[maxv] = { false };
+
+void Dijkstra(int s) {
+	// Fill range with value
+	// !!! Assigns val to all the elements in the range[first, last).
+	// !!! STL的用迭代器也可以
+	fill(d, d + maxv, INT_MAX);
+	memset(num, 0, sizeof(num));
+	memset(w, 0, sizeof(w));
+	d[s] = 0;
+	w[s] = weight[s];
+	num[s] = 1;
+	for (int i = 0; i < n; i++) {
+		int u = -1, MIN = INT_MAX;
+		for (int j = 0; j < n; j++) {
+			if (vis[j] == false && d[j] < MIN) {
+				u = j;
+				MIN = d[j];
+			}
+		}
+		if (u == -1) return;
+		vis[u] = true;
+		for (int v = 0; v < n; v++) {
+			if (vis[v] == false && G[u][v] != INT_MAX) {
+				if (d[u] + G[u][v] < d[v]) {
+					d[v] = d[u] + G[u][v];
+					w[v] = w[u] + weight[v];
+					num[v] = num[u];
+				}
+				else if (d[u] + G[u][v] == d[v]) {
+					if (w[u] + weight[v] > w[v]) {
+						w[v] = w[u] + weight[v];
+					}
+					num[v] += num[u];
+				}
+			}
+		}
+	}
+}
+int main() {
+	scanf("%d%d%d%d", &n, &m, &st, &ed);
+	for (int i = 0; i < n; i++) {
+		scanf("%d", &weight[i]);
+	}
+	int u, v;
+	fill(G[0], G[0] + maxv * maxv, INT_MAX);
+	for (int i = 0; i < m; i++) {
+		scanf("%d%d", &u, &v);
+		scanf("%d", &G[u][v]);
+		G[v][u] = G[u][v];
+	}
+	Dijkstra(st);
+	printf("%d %d\n", num[ed], w[ed]);
+	system("pause");
+	return 0;
+}
 ```
 

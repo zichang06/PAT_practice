@@ -2126,3 +2126,584 @@ int main() {
 }
 ```
 
+## 1058 选择题 ☆ 🔺
+
+1. set的巧用
+
+2. 格式化输入，scanf
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <cstdio>
+#include <vector>
+#include <set>
+using namespace std;
+
+int main() {
+	int n, m, temp, k;
+	scanf("%d%d", &n, &m);
+	vector<set<char>> right(m);   // !!!巧用set保存对的选项
+	vector<int> total(m), wrongCnt(m);
+	for (int i = 0; i < m; i++) {
+		scanf("%d%d%d", &total[i], &temp, &k);
+		for (int j = 0; j < k; j++) {
+			char c;
+			scanf(" %c", &c);
+			right[i].insert(c);  // !!! 
+		}
+	}
+	for (int i = 0; i < n; i++) {
+		int score = 0;
+		scanf("\n");
+		for (int j = 0; j < m; j++) {
+			if (j != 0) scanf(" ");
+			scanf("(%d", &k);
+			set<char> st;
+			char c;
+			for (int l = 0; l < k; l++) {
+				scanf(" %c", &c);  // !!!吸收格式中的空格
+				st.insert(c);
+			}
+			scanf(")");
+			if (st == right[j]) {  // 直接用集合相等来判断是否全对!!!
+				score += total[j];
+			}
+			else {
+				wrongCnt[j]++;
+			}
+		}
+		printf("%d\n", score);
+	}
+	int maxWrongCnt = 0;
+	for (int i = 0; i < m; i++) {
+		if (wrongCnt[i] > maxWrongCnt) {
+			maxWrongCnt = wrongCnt[i];
+		}
+	}
+	if (maxWrongCnt == 0)
+		printf("Too simple");
+	else {
+		printf("%d", maxWrongCnt);
+		for (int i = 0; i < m; i++) {  // !!!输出所有次数最大的题目
+			if (wrongCnt[i] == maxWrongCnt) {
+				printf(" %d", i + 1);
+			}
+		}
+	}
+	return 0;
+}
+```
+
+## 1059 C语言竞赛
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <vector>
+#include <string>
+#include <map>
+#include <cmath>
+using namespace std;
+map<string, int> record;
+map<string, bool> checked;
+bool isPrime(int n) {  // 判断n是否为素数
+	if (n <= 1)
+		return false;
+	int sqr = (int)sqrt(1.0 * n);
+	for (int i = 2; i <= sqr; i++) {
+		if (n % i == 0)
+			return false;
+	}
+	return true;
+}
+
+int main() {
+	int k;
+	string str;
+	cin >> k;
+	for (int no = 1; no <= k; no++) {
+		cin >> str;
+		record[str] = no;
+		checked[str] = false;
+	}
+	cin >> k;
+	while (k--) {
+		cin >> str;
+		map<string, int>::iterator it = record.find(str);
+		if (it == record.end()) {
+			printf("%s: Are you kidding?\n", str.c_str());
+			continue;
+		}
+		else if (checked[str])
+			printf("%s: Checked\n", str.c_str());
+		else if (it->second == 1) 
+			printf("%s: Mystery Award\n", str.c_str());
+		else if(isPrime(it->second))
+			printf("%s: Minion\n", str.c_str());
+		else
+			printf("%s: Chocolate\n", str.c_str());
+		checked[str] = true;
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1060 ☆ 爱丁堡数
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <vector>
+#include <string>
+#include <map>
+#include <cmath>
+#include <algorithm>
+using namespace std;
+
+bool cmp(int a, int b) {
+	return a > b;  // 从大到小排序
+}
+
+int main() {
+	int k, tmp, ans;
+	vector<int> record;
+	cin >> k;
+	for (int i = 0; i < k; i++) {
+		cin >> tmp;
+		record.push_back(tmp);
+	}	
+	sort(record.begin(), record.end(), cmp);  // !!! 核心思路
+	//试想，如果给定10天骑行距离，并且每一天的骑行距离都超过了10，那么当扫描的时候，
+	//不会有第E天的骑行距离没有超过E，那么就无法输出最终结果，
+	//所以在扫之前判断一下最小的骑行距离是否超过给定的天数，如果超过，则直接输出结果即可。
+	if (record[record.size() - 1] > k) {
+		cout << k << endl;
+	}
+	else {
+		for (int i = 0; i < record.size(); i++) {
+			if (record[i] <= i + 1) {  // 注意是超过，要加等号，所给测试样例就是
+				ans = i;
+				break;
+			}
+		}
+		cout << ans << endl;
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1062. ☆ 最简分数
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <vector>
+#include <string>
+#include <map>
+#include <cmath>
+#include <algorithm>
+using namespace std;
+struct Fraction {  // 分数
+	int up, down;  // 分子、分母
+	double value;
+};
+
+int gcd(int a, int b) {  // 求a与b的最大公约数
+	return b == 0 ? a : gcd(b, a % b);  // !!!辗转相除法, 记住
+}
+
+int main() {
+	int k;
+	vector<int> res;
+	double value;
+	Fraction a, b, c;
+	scanf("%d/%d %d/%d", &a.up, &a.down, &b.up, &b.down);
+	cin >> k;
+	a.value = (double)a.up / (double)a.down;
+	b.value = (double)b.up / (double)b.down;
+	if (a.value > b.value) {  // !!!两个输入的分数不一定是左小右大，要自己判断
+		c = a;
+		a = b;
+		b = c;
+	}
+	for (int i = 1; ; i++) {
+		int g = gcd(i, k);
+		if (g != 1)
+			continue;  // 不是最简分数
+		value = (double)i / (double)k;
+		if (value <= a.value)  // !!!不能等于边界!!!，虽然是double,等号生效2333
+			continue;
+		if (value < b.value)
+			res.push_back(i);
+		if (value >= b.value)
+			break;
+	}
+	for (int j = 0; j < res.size(); j++) {
+		if (j != 0)
+			cout << " ";
+		printf("%d/%d", res[j], k);
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1063 计算谱半径
+
+```c++
+#include<cstdio>
+#include<algorithm>
+#include<cmath>
+using namespace std;
+
+int n;
+double a,b,ans=0;
+double f(double a,double b){
+	return sqrt((a*a+b*b));
+}
+
+int main(){
+	scanf("%d",&n);
+	while(n--){
+		scanf("%lf%lf",&a,&b);
+		ans = max(ans,f(a,b));
+	}
+	printf("%.2f\n",ans);
+	return 0;
+}
+```
+
+
+
+## 1064 朋友数
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <cstdio>
+#include <vector>
+#include <string>
+#include <map>
+#include <cmath>
+#include <algorithm>
+using namespace std;
+bool friendNum[64] = { false };
+
+int calc(int c) {
+	int friendNum = 0;
+	while (c) {
+		friendNum += c % 10;
+		c /= 10;
+	}
+	return friendNum;
+}
+// 题目保证所有数字小于 10^4
+int main() {
+	vector<int> v;
+	int n;
+	cin >> n;
+	while(n--) {
+		int m, sum = 0;
+		cin >> m;
+		int res = calc(m);
+		if (friendNum[res] == false) {
+			v.push_back(res);
+			friendNum[res] = true;
+		}
+	}
+	sort(v.begin(), v.end());
+	cout << v.size() << endl;
+	for (int i = 0; i < v.size(); i++) {
+		if (i != 0)
+			cout << " ";
+		cout << v[i];
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1067 试密码
+
+```c++
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main() {
+	string s;
+	int N, cnt = 0;	
+	cin >> s >> N;
+	getchar();
+	string tmp;
+	getline(cin, tmp);
+	while (cnt < N && tmp != "#") {
+		if (tmp == s) {
+			cout << "Welcome in" << endl;
+			break;
+		}
+		else	
+			cout << "Wrong password: " << tmp << endl;
+		cnt++;
+		getline(cin, tmp);
+	}
+	if (cnt == N)	
+		cout << "Account locked" << endl;
+	return 0;
+}
+```
+
+## 1065 单身狗
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <string>
+#include <map>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+map<string, string> couple;
+map<string, bool> attend;
+vector<string> guests;
+vector<string> dog;
+
+int main() {
+	int k, sum = 0;
+	cin >> k;
+	string a, b;
+	while (k--) {
+		cin >> a >> b;
+		couple[a] = b;
+		couple[b] = a;
+		attend[a] = attend[b] = false;
+	}
+	cin >> k;
+	for (int i = 0; i < k; i++) {
+		cin >> a;
+		attend[a] = true;
+		guests.push_back(a);
+	}
+
+	map<string, string>::iterator it;
+	for (int i = 0; i < k; i++) {
+		it = couple.find(guests[i]);
+		if (it != couple.end() && attend[it->second] == true)
+			continue;
+		else {
+			dog.push_back(guests[i]);
+			sum++;
+		}
+	}
+	sort(dog.begin(), dog.end());
+	cout << dog.size() << endl;
+	for (int i = 0; i < dog.size(); i++) {
+		if (i != 0)
+			cout << " ";
+		cout << dog[i];
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1068 万绿丛中一点红 
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include<cstdio>
+#include<iostream>
+#include<cstring>
+#include<map>
+#include<cmath>
+using namespace std;
+
+map<int, int> vis;
+int s[1001][1001];
+int n, m, tol;
+//int dir[8][2] = { 1,0, -1,0, 0,1, 0,-1, 1,1, 1,-1, -1,1, -1,-1 };  // !!! 以此遍历四个方向
+int dir[8][2] = { {1,0}, {-1,0}, {0,1}, {0,-1}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};  // !!! 以此遍历四个方向
+//判断是否大于阈值 
+bool check(int x, int y)
+{
+	for (int i = 0; i < 8; i++) {
+		int xx = x + dir[i][0];
+		int yy = y + dir[i][1];
+		if (xx >= 0 && xx < n && yy < m && yy >= 0 && abs(s[xx][yy] - s[x][y]) <= tol) return false;
+	}
+	return true;
+}
+
+int main() {
+	cin >> m >> n >> tol;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			cin >> s[i][j];
+			vis[s[i][j]] ++;
+		}
+	}
+	//cnt记录只出现一次的数字的个数
+	//x y记录坐标 
+	int cnt = 0;
+	int x, y;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			if (vis[s[i][j]] == 1 && check(i, j)) {
+				cnt++;
+				x = i;
+				y = j;
+			}
+		}
+	}
+
+	if (cnt == 1) {
+		printf("(%d, %d): %d\n", y + 1, x + 1, s[x][y]);
+	}
+	else if (cnt > 1) {
+		puts("Not Unique");
+	}
+	else {
+		puts("Not Exist");
+	}
+	return 0;
+}
+
+```
+
+## 1069 微博转发抽奖
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include<cstdio>
+#include<iostream>
+#include<cmath>
+#include<algorithm>
+#include<cstring>
+#include<string>
+#include<vector>
+#include<map>
+using namespace std;
+
+map<string, bool> got;
+int main() {
+	int sum = 0;  // 领到礼品的人数
+	string str;
+	vector<string>  strs;
+	int m, n, start;
+	cin >> m >> n >> start;
+	for (int i = 0; i < m; i++) {
+		cin >> str;
+		strs.push_back(str);
+		got[str] = false;
+	}
+	if (m < start) {
+		cout << "Keep going...";
+		system("pause");
+	}
+	bool flag = false;
+	for (int i = start - 1; i < m; i+=n) {
+		while (got[strs[i]] == true) {
+			i++;
+			if (i == n) {
+				flag = true;
+				break;
+			}
+		}
+		if (flag)
+			break;
+		cout << strs[i] << endl;
+		got[strs[i]] = true;
+	}
+	system("pause");
+	return 0;
+}
+
+```
+
+## 1070 ☆ 结绳
+
+```c++
+
+#include<cstdio>
+#include<algorithm>
+#define MAXN 10001
+using namespace std;
+int n, a[MAXN];
+int main()
+{
+	scanf("%d",&n);
+	for(int i=0; i<n; i++) scanf("%d", &a[i]);
+	sort(a,a+n);
+	int ans = a[0];
+	for(int i=1 ;i<n ;i++){
+		ans = (ans + a[i])/2;
+	}
+	printf("%d\n",ans);
+} 
+
+/*
+贪心法，一定要将这些绳子按照长度排序，
+而选择身子的顺序无非有三种，从小到大，从大到小，从中间到两边。
+绳子每进行一次连接就要对折一次，长度就会减少一半，那么应该让较长的绳子尽量少对折。
+按照这样的想法，那么应该将绳子从小到大排列，两两进行串连。
+*/
+```
+
+## 1072 开学寄语
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include<cstdio>
+#include<iostream>
+#include<cmath>
+#include<algorithm>
+#include<cstring>
+#include<string>
+#include<vector>
+#include<map>
+#include <set>
+using namespace std;
+
+int main() {
+	int n, m, i, j, k;
+	string x, y;
+	set<string> s;  // !!! 用set存储这些string
+	int stu = 0, cnt = 0;
+	scanf("%d %d", &n, &m);
+	for (i = 0; i < m; i++) {
+		cin >> x;
+		s.insert(x);
+	}
+	for (i = 0; i < n; i++) {
+		int flag = 0;
+		cin >> x >> k;
+		for (j = 0; j < k; j++) {
+			cin >> y;
+			if (s.count(y)) {  // !!!set.count()
+				if (!flag) {
+					flag = 1;
+					stu++;
+					cout << x << ":";
+				}
+				cnt++;
+				cout << " " << y;
+			}
+		}
+		if (flag) {
+			printf("\n");
+		}
+	}
+	printf("%d %d\n", stu, cnt);
+	return 0;
+}
+```
+
+
+
+
+
