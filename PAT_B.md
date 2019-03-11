@@ -445,11 +445,6 @@ int main() {
 
 1. cstring和string的使用
 2. 注意分情况讨论，具体见注释
-3. 最后一个用例总是运行时出错。原先我设置的结果数组是10000，改了22000后就AC了。网上有人如下说，但我没懂。???
-> 这里数字存储长度不超过9999个字节，9999个字节可以存储多大的数？
-1个字节可以存储2^8-1 = 127
-9999个字节可以存储2^(8*9999)-1 数字用十进制表示长度为21070位，所以数组的大小不够存储。修改后测试通过。
-
 ```C++
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
@@ -461,7 +456,7 @@ using namespace std;
 int main() {
 	string a;
 	cin >> a;
-	char res[22000] = { '\0' };
+	char res[20000] = { '\0' };
 	int pos_dot = (int)a.find('.');
 	int pos_E = (int)a.find('E');
 	char sign = a[0];

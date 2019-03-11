@@ -42,7 +42,7 @@ int main() {
 	return 0;
 }
 ```
-## ☆ Shuffling Machine
+## ☆ 1042 Shuffling Machine
 思想值得记住！
 ```c++
 #define _CRT_SECURE_NO_WARNINGS
@@ -4187,6 +4187,544 @@ int main() {
 	}
 	Dijkstra(st);
 	printf("%d %d\n", num[ed], w[ed]);
+	system("pause");
+	return 0;
+}
+```
+
+## 1030 ☆ 🔺 Travel Plan
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include<cstdio>
+#include<iostream>
+#include<climits>
+#include<cmath>
+#include<algorithm>
+#include<cstring>
+#include<string>
+#include<vector>
+#include<queue>
+#include<map>
+#include <set>
+using namespace std;
+const int maxv = 501;
+
+int n, m, st, ed, G[maxv][maxv], cost[maxv][maxv];
+int d[maxv], c[maxv], pre[maxv];
+bool vis[maxv] = { false };
+
+void Dijkstra(int s) {
+	fill(d, d + maxv, INT_MAX);
+	fill(c, c + maxv, INT_MAX);
+	for (int i = 0; i < n; i++) pre[i] = i;
+	d[s] = 0;
+	c[s] = 0;
+	for (int i = 0; i < n; i++) {
+		int u = -1, MIN = INT_MAX;
+		for (int j = 0; j < n; j++) {
+			if (vis[j] == false && d[j] < MIN) {
+				u = j;
+				MIN = d[j];
+			}
+		}
+		if (u == -1) return;
+		vis[u] = true;
+		for (int v = 0; v < n; v++) {
+			if (vis[v] == false && G[u][v] != INT_MAX) {
+				if (d[u] + G[u][v] < d[v]) {
+					d[v] = d[u] + G[u][v];
+					c[v] = c[u] + cost[u][v];
+					pre[v] = u;
+				}
+				else if (d[u] + G[u][v] == d[v]) {
+					if (c[u] + cost[u][v] < c[v]) {
+						c[v] = c[u] + cost[u][v];
+						pre[v] = u;
+					}
+				}
+			}
+		}
+	}
+}
+
+void printPath(int v) {
+	if (v == st) {
+		printf("%d ", v);
+		return;
+	}
+	printPath(pre[v]);
+	printf("%d ", v);
+}
+
+int main() {
+	scanf("%d%d%d%d", &n, &m, &st, &ed);
+	int u, v;
+	fill(G[0], G[0] + maxv * maxv, INT_MAX);
+	for (int i = 0; i < m; i++) {
+		scanf("%d%d", &u, &v);
+		scanf("%d%d", &G[u][v], &cost[u][v]);
+		G[v][u] = G[u][v];
+		cost[v][u] = cost[u][v];
+	}
+	Dijkstra(st);
+	printPath(ed);
+	printf("%d %d\n", d[ed], c[ed]);
+	system("pause");
+	return 0;
+}
+```
+
+## 1072 ☆ 🔺 ??? Gas Station
+
+最后一个WA
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include<cstdio>
+#include<iostream>
+#include<climits>
+#include<cmath>
+#include<algorithm>
+#include<cstring>
+#include<string>
+#include<vector>
+#include<queue>
+#include<map>
+#include <set>
+using namespace std;
+const int maxv = 1001;
+const int INF = INT_MAX;
+
+int n, m, k, DS, G[maxv][maxv];
+int d[maxv];
+bool vis[maxv] = { false };
+
+void Dijkstra(int s) {
+	memset(vis, false, sizeof(vis));
+	fill(d, d + maxv, INF);
+	d[s] = 0;
+	for (int i = 0; i < n + m; i++) {
+		int u = -1, MIN = INF;
+		for (int j = 1; j <= n + m; j++) {
+			if (vis[j] == false && d[j] < MIN) {
+				u = j;
+				MIN = d[j];
+			}
+		}
+		if (u == -1)
+			return;
+		vis[u] = true;
+		for (int v = 1; v <= n + m; v++) {
+			if (vis[v] == false && G[u][v] != INF) {
+				if (d[u] + G[u][v] < d[v]) {
+					d[v] = d[u] + G[u][v];
+				}
+			}
+		}
+	}
+}
+
+int getID(char str[]) {
+	int i = 0, len = strlen(str), ID = 0;
+	while (i < len) {
+		if (str[i] != 'G') {
+			ID = ID * 10 + (str[i] - '0');
+		}
+		i++;
+	}
+	if (str[0] == 'G') return n + ID;
+	else return ID;
+}
+
+int main() {
+	scanf("%d%d%d%d", &n, &m, &k, &DS);
+	int u, v, w;
+	char city1[5], city2[5];
+	fill(G[0], G[0] + maxv * maxv, INF);
+	for (int i = 0; i < k; i++) {
+		scanf("%s %s %d", city1, city2, &w);
+		u = getID(city1);
+		v = getID(city2);
+		G[v][u] = G[u][v] = w;
+	}
+	double ansDis = -1, ansAvg = INF;
+	int ansID = -1;
+	for (int i = n + 1; i <= n + m; i++) {
+		double minDis = INF, avg = 0;
+		Dijkstra(i);
+		for (int j = 1; j <= n; j++) {
+			if (d[j] > DS) {
+				minDis = -1;
+				break;
+			}
+			if (d[j] < minDis)
+				minDis = d[j];
+			avg += 1.0 * d[j] / n;
+		}
+		if (minDis == -1)
+			continue;
+		if (minDis > ansDis) {
+			ansID = i;
+			ansDis = minDis;
+			ansAvg = avg;
+		}
+		else if (minDis == ansDis && avg < ansAvg) {
+			ansID = i;
+			ansAvg = avg;
+		}
+	}
+	if (ansID == -1)
+		printf("No Solution\n");
+	else {
+		printf("G%d\n", ansID - n);
+		printf("%.1f %.1f\n", ansDis, ansAvg);
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## ☆ 🔺 1087 All Roads Lead to Rome
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include<cstdio>
+#include<iostream>
+#include<climits>
+#include<cmath>
+#include<algorithm>
+#include<cstring>
+#include<string>
+#include<vector>
+#include<queue>
+#include<map>
+#include <set>
+using namespace std;
+const int maxv = 201;
+const int INF = INT_MAX;
+
+int n, m, st, G[maxv][maxv], weight[maxv];
+int d[maxv], numPath = 0, maxW = 0;
+double maxAvg = 0;
+bool vis[maxv] = { false };
+vector<int> pre[maxv];
+vector<int> tempPath, path;
+map<string, int> cityToIndex;
+map<int, string> indexToCity;
+
+void Dijkstra(int s) {
+	fill(d, d + maxv, INF);
+	d[s] = 0;
+	for (int i = 0; i < n; i++) {
+		int u = -1, MIN = INF;
+		for (int j = 0; j < n; j++) {
+			if (vis[j] == false && d[j] < MIN) {
+				u = j;
+				MIN = d[j];
+			}
+		}
+		if (u == -1) return;
+		vis[u] = true;
+		for (int v = 0; v < n; v++) {
+			if (vis[v] == false && G[u][v] != INF) {
+				if (d[u] + G[u][v] < d[v]) {
+					d[v] = d[u] + G[u][v];
+					pre[v].clear();
+					pre[v].push_back(u);
+				}
+				else if (d[u] + G[u][v] == d[v]) {
+					pre[v].push_back(u);
+				}
+			}
+		}
+	}
+}
+
+void DFS(int v) {
+	if (v == st) {
+		tempPath.push_back(v);
+		numPath++;
+		int tempW = 0;
+		for (int i = tempPath.size() - 2; i >= 0; i--) {
+			int id = tempPath[i];
+			tempW += weight[id];
+		}
+		double tempAvg = 1.0 * tempW / (tempPath.size() - 1);
+		if (tempW > maxW) {
+			maxW = tempW;
+			maxAvg = tempAvg;
+			path = tempPath;
+		}
+		else if (tempW = maxW && tempAvg > maxAvg) {
+			maxAvg = tempAvg;
+			path = tempPath;
+		}
+		tempPath.pop_back();
+		return;
+	}
+	tempPath.push_back(v);
+	for (int i = 0; i < pre[v].size(); i++) {
+		DFS(pre[v][i]);
+	}
+	tempPath.pop_back();
+}
+
+int main() {
+	string start, city1, city2;
+	cin >> n >> m >> start;
+	cityToIndex[start] = 0;
+	indexToCity[0] = start;
+	for (int i = 1; i <= n - 1; i++) {
+		cin >> city1 >> weight[i];
+		cityToIndex[city1] = i;
+		indexToCity[i] = city1;
+	}
+	fill(G[0], G[0] + maxv * maxv, INF);
+	for (int i = 0; i < m; i++) {
+		cin >> city1 >> city2;
+		int c1 = cityToIndex[city1], c2 = cityToIndex[city2];
+		cin >> G[c1][c2];
+		G[c2][c1] = G[c1][c2];
+	}
+	Dijkstra(0);
+	int rom = cityToIndex["ROM"];
+	DFS(rom);
+	printf("%d %d %d %d\n", numPath, d[rom], maxW, (int)maxAvg);
+	for (int i = path.size() - 1; i >= 0; i--) {
+		cout << indexToCity[path[i]];
+		if (i > 0)
+			cout << "->";
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1007 ☆ 🔺 Maximum Subsequence Sum
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include<cstdio>
+#include<iostream>
+#include<climits>
+#include<cmath>
+#include<algorithm>
+#include<cstring>
+#include<string>
+#include<vector>
+#include<queue>
+#include<map>
+#include <set>
+using namespace std;
+const int maxn = 10001;
+int a[maxn], dp[maxn];
+int s[maxn] = { 0 };
+
+int main() {
+	int n;
+	scanf("%d", &n);
+	bool flag = false;
+	for (int i = 0; i < n; i++) {
+		scanf("%d", &a[i]);
+		if (a[i] >= 0) flag = true;
+	}
+	if (flag == false) {
+		printf("0 %d %d", a[0], a[n - 1]);
+		return 0;
+	}
+	dp[0] = a[0];
+	for (int i = 1; i < n; i++) {
+		if (dp[i - 1] + a[i] > a[i]) {
+			dp[i] = dp[i - 1] + a[i];
+			s[i] = s[i - 1];
+		}
+		else {
+			dp[i] = a[i];
+			s[i] = i;
+		}
+	}
+	int k = 0;
+	for (int i = 1; i < n; i++) {
+		if (dp[i] > dp[k]) {
+			k = i;
+		}
+	}
+	printf("%d %d %d\n", dp[k], a[s[k]], a[k]);
+	system("pause");
+	return 0;
+}
+```
+
+## 1040 ☆ 🔺 Longest Symmetric String
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include<cstdio>
+#include<iostream>
+#include<climits>
+#include<cmath>
+#include<algorithm>
+#include<cstring>
+#include<string>
+#include<vector>
+#include<queue>
+#include<map>
+#include <set>
+using namespace std;
+const int maxn = 1001;
+int dp[maxn][maxn];
+
+int main() {
+	string str;
+	getline(cin, str);
+	int len = str.length(), ans = 1;
+	memset(dp, 0, sizeof(dp));
+
+	for (int i = 0; i < len; i++) {
+		dp[i][i] = 1;
+		if (i < len - 1) {
+			if (str[i] == str[i + 1]) {
+				dp[i][i + 1] = 1;
+				ans = 2;
+			}
+		}
+	}
+	for (int L = 3; L <= len; L++) {
+		for (int i = 0; i + L - 1 < len; i++) {
+			int j = i + L - 1;
+			if (str[i] == str[j] && dp[i + 1][j - 1] == 1) {
+				dp[i][j] = 1;
+				ans = L;
+			}
+		}
+	}
+	printf("%d\n", ans);
+	system("pause");
+	return 0;
+}
+```
+
+## 1068 ☆ 🔺 Find More Coins
+
+```C++
+#define _CRT_SECURE_NO_WARNINGS
+#include<cstdio>
+#include<iostream>
+#include<climits>
+#include<cmath>
+#include<algorithm>
+#include<cstring>
+#include<string>
+#include<vector>
+#include<queue>
+#include<map>
+#include <set>
+using namespace std;
+const int maxn = 10001;
+const int maxv = 101;
+int w[maxn], dp[maxv] = { 0 };
+int choice[maxn][maxv], flag[maxn];
+
+bool cmp(int a, int b) {
+	return a > b;
+}
+
+int main() {
+	int n, m;
+	scanf("%d%d", &n, &m);
+	for (int i = 1; i <= n; i++) {
+		scanf("%d", &w[i]);
+	}
+	sort(w + 1, w + n + 1, cmp);
+	for (int i = 1; i <= n; i++) {
+		for (int v = m; v >= w[i]; v--) {
+			if (dp[v] <= dp[v - w[i]] + w[i]) {
+				dp[v] = dp[v - w[i]] + w[i];
+				choice[i][v] = 1;
+			}
+			else {
+				choice[i][v] = 0;
+			}
+		}
+	}
+	if (dp[m] != m)
+		printf("No Solution");
+	else {
+		int k = n, num = 0, v = m;
+		while (k >= 0) {
+			if (choice[k][v] == 1) {
+				flag[k] = true;
+				v -= w[k];
+				num++;
+			}
+			else
+				flag[k] = false;
+			k--;
+		}
+		for (int i = n; i >= 1; i--) {
+			if (flag[i] == true) {
+				printf("%d", w[i]);
+				num--;
+				if (num > 0)
+					printf(" ");
+			}
+		}
+	}
+	system("pause");
+	return 0;
+}
+```
+
+## 1045 ☆ 🔺 Favorite Color Stripe （
+
+```c++
+#define _CRT_SECURE_NO_WARNINGS
+#include<cstdio>
+#include<iostream>
+#include<climits>
+#include<cmath>
+#include<algorithm>
+#include<cstring>
+#include<string>
+#include<vector>
+#include<queue>
+#include<map>
+#include <set>
+using namespace std;
+const int maxn = 10001;
+const int maxc = 201;
+int A[maxc], B[maxn], dp[maxc][maxn];
+
+int main() {
+	int n, m;
+	scanf("%d%d", &n, &m);
+	for (int i = 1; i <= m; i++) {
+		scanf("%d", &A[i]);
+	}
+	int L;
+	scanf("%d", &L);
+	for (int i = 1; i <= L; i++) {
+		scanf("%d", &B[i]);
+	}
+	for (int i = 0; i <= m; i++) {
+		dp[i][0] = 0;
+	}
+	for (int j = 0; j <= L; j++) {
+		dp[0][j] = 0;
+	}
+	for (int i = 1; i <= m; i++) {
+		for (int j = 1; j <= L; j++) {
+			int MAX = max(dp[i - 1][j], dp[i][j - 1]);
+			if (A[i] == B[j]) {
+				dp[i][j] = MAX + 1;
+			}
+			else {
+				dp[i][j] = MAX;
+			}
+		}
+	}
+	printf("%d\n", dp[m][L]);
 	system("pause");
 	return 0;
 }
